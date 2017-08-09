@@ -4,16 +4,17 @@ var dokioModel = require('../models/dokio');
 var formidable = require('formidable');
 var AWS = require('aws-sdk');
 var bodyParser = require('body-parser');
+var daum = require('daum-map-api')
 
-
-AWS.config.update({
-    secretAccessKey: 'ntq+T3jCqsMFkheq9AMsI0pDkRMdF5crS6fkaX1x',
-    accessKeyId: 'AKIAIWVJ56GWXHH4BUTA',
-    region: 'ap-northeast-2'
-});
 
 var s3 = new AWS.S3();
 /* GET home page. */
+router.get('/daum', function(req, res, next) {
+  daum.mapImage('서울역', function(result) {
+  	console.log(result);
+  });
+});
+
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });

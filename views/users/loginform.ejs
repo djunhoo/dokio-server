@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+  <body>
+		<div class="navbar navbar-custom navbar-fixed-top">
+			<div class="navbar-header">
+				<a href="" class="navbar-brand">DoKio</a>
+			</div>
+			<div class="collapse navbar-collapse">
+			        <div class="pull-right">
+			        	<a id="login" href="/users/login" class="navbar-brand">로그인</a>
+			        </div>
+			</div>
+		</div>
+
+		<div id="side_bar" class="row-offcanvas row-offcanvas-left">
+			<div id="sidebar" class="">
+			      <div class="col-md-12">
+			        <h3></h3>
+			        <div id="my_info">
+			        	<img src="https://dokio2.s3.ap-northeast-2.amazonaws.com/glory_animal.PNG" class="img-circle" width="70" height="70">
+			        	<br><br>
+						<p><b>이건호</b>님 환영합니다.</p>
+			        </div>
+			        <ul class="nav nav-pills nav-stacked">
+			          <li><a href="#">글쓰기</a></li>
+			          <li><a href="#">글목록</a></li>
+			          <li><a href="#"></a></li>
+			        </ul>
+			      </div>
+			</div>
+			<div id="main">
+			      <div class="col-md-12">
+			                <!-- 플래쉬 에러 -->
+			          <% if (message.length > 0) { %>
+			          	  <br>z
+			              <div class="alert alert-danger"><%= message %></div>
+			          <% } %>
+			          <h2>로그인</h2>
+			          <div class="row">
+			              <div class="col-md-8">
+				              <div class="panel panel-default" >
+						            <div class="panel-heading">
+						                <div class="panel-title text-center">Dokio</div>
+						            </div>
+
+						            <div class="panel-body" >
+						                <form name="form" id="form" class="form-horizontal" method="POST">
+						                    <div class="input-group">
+						                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+						                        <input id="user" type="text" class="form-control" name="username" placeholder="아이디">
+						                    </div>
+											<br>
+						                    <div class="input-group">
+						                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+						                        <input id="password" type="password" class="form-control" name="password" placeholder="비밀번호">
+						                    </div>
+											<br>
+						                    <div class="form-group">
+						                        <!-- Button -->
+						                            <button type="submit" href="#" class="btn btn-primary pull-right"><i class="glyphicon glyphicon-log-in"></i> 로그인</button>
+													<button type="button" onclick="location.href='/users/signup'" class="btn btn-info"><i class="glyphicon glyphicon-user"></i> 회원가입</button>
+											</div>
+										</form>
+						            </div>
+							   </div>
+						   </div>
+			          </div>
+
+			  </div>
+		</div>
+  </body>
+</html>

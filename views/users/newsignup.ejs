@@ -1,0 +1,55 @@
+<!-- views/signup.ejs -->
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <style>
+        body        { padding-top:80px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+<div class="col-sm-6 col-sm-offset-3">
+
+    <h1><span class="fa fa-sign-in"></span> 회원가입</h1>
+
+    <!-- show any messages that come back with authentication -->
+    <% if (message.length > 0) { %>
+        <div class="alert alert-danger"><%= message %></div>
+    <% } %>
+
+    <!-- LOGIN FORM -->
+    <form action="/users/signup" method="post">
+        <div class="form-group">
+            <label>이메일</label>
+            <input type="text" class="form-control" name="email">
+        </div>
+        <div class="form-group">
+            <label>비밀번호</label>
+            <input type="password" class="form-control" name="password">
+        </div>
+        <div class="form-group">
+            <label>주소</label>
+            <input type="text" class="form-control" name="address">
+        </div>
+        <div class="form-group">
+            <label>이름</label>
+            <input type="text" class="form-control" name="name">
+        </div>
+
+        <button type="submit" class="btn btn-warning btn-lg">회원가입</button>
+    </form>
+
+    <hr>
+
+    <p>회원가입을 하셨어요?? <a href="/login">로그인</a></p>
+    <p> <a href="/">처음으로</a>.</p>
+
+</div>
+
+</div>
+</body>
+</html>
