@@ -21,17 +21,29 @@
 
         <!-- LOCAL INFORMATION -->
         <div class="col-sm-6">
-            <% if (user.facebook) { %>
-            <div class="well">
-                            <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+            <% if (user.kakao) { %>
+                <div class="well">
+                                <h3 class="text-primary"> KaKao</h3>
 
-                                <p>
-                                    <strong>id</strong>: <%= user.facebook.id %><br>
-                                    <strong>token</strong>: <%= user.facebook.token %><br>
-                                    <strong>email</strong>: <%= user.facebook.email %><br>
-                                    <strong>name</strong>: <%= user.facebook.name %>
-                                </p>
-            </div>
+                                    <p>
+                                        <strong>id</strong>: <%= user.kakao.id %><br>
+                                        <strong>token</strong>: <%= user.kakao.token %><br>
+                                        <strong>email</strong>: <%= user.kakao.email %><br>
+                                        <strong>name</strong>: <%= user.kakao.name %>
+                                    </p>
+                </div>
+            <% } %>
+            <% if (user.facebook.name) { %>
+                <div class="well">
+                                <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+
+                                    <p>
+                                        <strong>id</strong>: <%= user.facebook.id %><br>
+                                        <strong>token</strong>: <%= user.facebook.token %><br>
+                                        <strong>email</strong>: <%= user.facebook.email %><br>
+                                        <strong>name</strong>: <%= user.facebook.name %>
+                                    </p>
+                </div>
             <% } %>
             <% if (user.local.email) { %>
             <div class="well">

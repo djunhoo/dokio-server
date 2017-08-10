@@ -3,6 +3,8 @@
 // 인증 정보
 var LocalStrategy   = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
+var NaverStrategy    = require('passport-naver').Strategy;
+var KakaoStrategy = require('passport-kakao').Strategy;
 
 // 사용자 모델
 var User            = require('../models/users');
@@ -21,6 +23,59 @@ module.exports = function(passport) {
             done(err, user);
         });
     });
+
+    // 카카오 로그인
+    passport.use(new KakaoStrategy({
+            clientID: configAuth.kakaoAuth.clientID,
+            callbackURL: configAuth.kakaoAuth.callbackURL,
+          //  profileFields   : ['id', 'name', 'email'],
+        },
+        function(token, refreshToken, profile, done) {
+            User.findOne({'kakao.id': profile.id}, function(err, user) {
+                if (err)
+                      return done(err);
+                if (user) {
+                      return done(null, user); // user found, return that user
+                } else {
+                      console.log('kakao profile=', profile);
+                      var newUser         = new User();
+                      newUser.kakao.id    = profile.id;
+                      newUser.kakao.token = token;
+                      newUser.kakao.name  = profile.username;
+                      newUser.save(function(err) {
+                          if (err)
+                              throw err;
+                          return done(null, newUser);
+                      });
+                }
+            });
+        }
+    ));
+
+    // 네이버 로그인
+    passport.use(new NaverStrategy({
+            clientID: configAuth.naverAuth.clientID,
+            clientSecret: configAuth.naverAuth.clientSecret,
+            callbackURL: configAuth.naverAuth.callbackURL
+        },
+        function(accessToken, refreshToken, profile, done) {
+            process.nextTick(function () {
+                // @todo Remove necessary comment
+                console.log("profile=");
+                //console.log(profile);
+                // data to be saved in DB
+                user = {
+                    name: profile.displayName,
+                    email: profile.emails[0].value,
+                    username: profile.displayName,
+                    provider: 'naver',
+                    naver: profile._json
+                };
+                console.log("user=", user);
+                //console.log(user);
+                return done(null, profile);
+            });
+        }));
 
     // 페이스북 로그인
     passport.use(new FacebookStrategy({
@@ -76,7 +131,7 @@ module.exports = function(passport) {
 
        }));
 
-
+    // 회원가입
     passport.use('local-signup', new LocalStrategy({
 
         usernameField : 'email',
@@ -95,8 +150,8 @@ module.exports = function(passport) {
                 var newUser            = new User();
                 newUser.local.email    = email;
                 newUser.local.password = newUser.generateHash(password);
-                newUser.address        = req.body.address;
-                newUser.name           = req.body.name;
+                newUser.phone_number   = req.body.phone_number;
+                newUser.local.name     = req.body.name;
                 console.log('newUser=', newUser);
                 newUser.save(function(err) {
                     if (err)

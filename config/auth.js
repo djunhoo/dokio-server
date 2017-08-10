@@ -8,16 +8,15 @@ module.exports = {
         'callbackURL'   : 'http://localhost:3000/users/auth/facebook/callback'
     },
 
-    'twitterAuth' : {
-        'consumerKey'       : 'your-consumer-key-here',
-        'consumerSecret'    : 'your-client-secret-here',
-        'callbackURL'       : 'http://localhost:8080/auth/twitter/callback'
+    'naverAuth' : {
+        'clientID'       : 'BE0l52f9aEfCBb1pX_kH',
+        'clientSecret'    : '1P2WHA7qjT',
+        'callbackURL'       : 'http://localhost:3000/users/auth/naver/callback'
     },
 
-    'googleAuth' : {
-        'clientID'      : 'your-secret-clientID-here',
-        'clientSecret'  : 'your-client-secret-here',
-        'callbackURL'   : 'http://localhost:8080/auth/google/callback'
+    'kakaoAuth' : {
+        'clientID'      : 'cb93079bd2fbf2779ebef70596627ab5',
+        'callbackURL'   : 'http://localhost:3000/users/auth/kakao/callback'
     }
 
 };

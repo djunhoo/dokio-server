@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Node Authentication</title>
+    <title>Dokio</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
     <style>
@@ -31,13 +31,14 @@
             <label>비밀번호</label>
             <input type="password" class="form-control" name="password">
         </div>
-
-        <button type="submit" class="btn btn-warning btn-lg">로그인</button>
+        <button type="submit" class="btn btn-info btn-lg btn-block">로그인</button>
+        <a href="/users/auth/facebook"  class="btn btn-primary btn-lg btn-block">Facebook</a>
+        <a href="/users/auth/kakao" class="btn btn-warning btn-lg btn-block">Kakao</a>
     </form>
 
-    <hr>
+    <br>
 
-    <p>가입이 필요하세요? <a href="/signup">회원가입</a></p>
+    <p>가입이 필요하세요? <a href="/users/newsignup">회원가입</a></p>
     <p><a href="/">처음으로</a>.</p>
 
 </div>
