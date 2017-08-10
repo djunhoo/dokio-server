@@ -12,6 +12,7 @@ var flash = require('connect-flash');
 
 
 var index = require('./routes/index');
+var dokio = require('./routes/dokio');
 
 var app = express();
 
@@ -41,6 +42,7 @@ var users = require('./routes/users')(passport);
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/dokio', dokio);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

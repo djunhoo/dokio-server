@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <a href="/dokio/search_list">도키오</a><br>
+    <a href="/dokio/<%=docs.dokio_id%>/review/write">리뷰 작성</a><br>
+    <% for(var i=0, len=docs.length; i<len, dokio=docs[i]; i++) {%>
+    <table width =400 border="1">
+      <tr>
+        <th width="30">내용</th>
+        <td><a href="/dokio/<%=dokio._id%>"><%=dokio.conetent%></a></td>
+      </tr>
+      <tr>
+      	<th>추천</th>
+      	<td><%=dokio.like_count%></td>
+      </tr>
+    </table>
+    <%}%>
+    <tr>
+    <td colspan="2">
+    	<input type="submit" value="쓰기">
+    	<input type="reset" value="취소">
+    </td>
+    </tr>
+  </body>
+</html>

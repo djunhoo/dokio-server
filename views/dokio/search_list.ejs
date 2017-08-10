@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset="utf-8">
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <a href="/dokio/search_list">도키오</a>
+    <% for(var i=0, len=docs.length; i<len, dokio=docs[i]; i++) {%>
+    <table width =400 border="1">
+      <tr>
+        <th width="30">호텔</th>
+        <td><a href="/dokio/<%=dokio._id%>"><%=dokio.name%></a></td>
+      </tr>
+        <th>카테고리</th>
+        <td><%=dokio.category%></td>
+      </tr>
+      <tr>
+        <th>price</th>
+        <td><%=dokio.price%></td>
+      </tr>
+    </table>
+    <%}%>
+  </body>
+</html>
