@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 var petSchema = new Schema({
 	name: String,
 	age: String,
-	// sex: String,
+	sex: String,
 	weight: String,
 	categories: [{type:String, ref:'PetCategory'}],
 	pet_img_url: String,

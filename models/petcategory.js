@@ -3,10 +3,10 @@ var db = require('./db');
 
 var Schema = mongoose.Schema;
 
-var petcategoySchema = new Schema({
-	categotied_name: String
+var petcategorySchema = new Schema({
+	category_name: String
 })
 
-// var petcategoryModel = db.model('petcategoy', petcategoySchema);
+var petcategorySchema = db.model('petcategory', petcategorySchema);
 
-module.exports = petcategoySchema;
+module.exports = petcategorySchema;
