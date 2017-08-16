@@ -1,3 +1,5 @@
+<!-- mypage.ejs -->
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -19,7 +21,7 @@
             </div>
             <div class="collapse navbar-collapse">
                     <div class="pull-right">
-                        <% if (login) {%>
+                        <% if (login) { %>
                             <a id="logout" href="/users/logout" class="navbar-brand">로그아웃</a>
                         <% } else { %>
                             <a id="login" href="/users/login" class="navbar-brand">로그인</a>
@@ -49,20 +51,73 @@
                     </div>
                     <ul class="nav nav-pills nav-stacked">
                     <% if (login) {%>
-                      <li><a href="/users/<%= user._id %>">마이페이지</a></li>
+                      <li><a style="color: gray"href="#">마이페이지</a></li>
                     <% } %>
-                      <li><a href="/users/memo">메모</a></li>
+                      <li><a href="#">글목록</a></li>
                       <li><a href="#"></a></li>
                     </ul>
                   </div>
             </div>
             <div id="main">
-                  <br>
-                  <div id="wrapper" style="text-align: center;" class="col-md-12">
-                        <img width="300" height="300" style="pedding-left:25px;" src="https://s3.ap-northeast-2.amazonaws.com/dokio2/bg_main.jpg" class="img-rounded" >
-                        <h3 style="display: inline-block;">  </h3>
-                  </div>
-              </div>
+            <br>
+			<div class="">
+			   <!-- left column -->
+			   <div class="col-md-4 col-sm-6 col-xs-12">
+			     <div class="text-center">
+					<% if(user.myprof_img) { %>
+			       		<img src="<%= user.myprof_img %>" class="img-circle img-thumbnail">
+					<% } else { %>
+						<img src="https://s3.ap-northeast-2.amazonaws.com/dokio2/default_user.png" class="avatar img-circle img-thumbnail" width="250" hegiht="250">
+					<% } %>
+			     </div>
+			   </div>
+			   <!-- edit form column -->
+			   <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+			     <h3>상세 정보 페이지</h3>
+			     <form class="form-horizontal" role="form" action="/users/edit" method="post" enctype="multipart/form-data">
+			       <div class="form-group">
+			         <label class="col-lg-3 control-label">아이디</label>
+			         <div class="col-lg-8">
+			         	<br><%= user.email %>
+			         </div>
+			       </div>
+			       <div class="form-group">
+			         <label class="col-lg-3 control-label">이메일</label>
+			         <div class="col-lg-8">
+			           <br><%= user.email %>
+			         </div>
+			       </div>
+			       <div class="form-group">
+			         <label class="col-lg-3 control-label">이름</label>
+			         <div class="col-lg-8">
+			           <br><%= user.name %>
+			         </div>
+			       </div>
+			       <div class="form-group">
+			         <label class="col-lg-3 control-label">전화번호</label>
+			         <div class="col-lg-8">
+			         		<input class="form-control" value="<%= user._id %>" type="hidden">
+			                <input class="form-control" value="<%= user.phone_number %>" name="phone_number" type="text">
+			         </div>
+			       </div>
+			       <div class="form-group">
+			         <label class="col-lg-3 control-label">프로필 사진</label>
+			         <div class="col-lg-8">
+			                     <input class="form-control" type="file" name="userfile">
+			         </div>
+			       </div>
+			       <div class="form-group">
+			         <label class="col-md-3 control-label"></label>
+			         <div class="col-md-8">
+			           <button href="/users/edit" type="submit" class="btn btn-primary">수정 완료</button>
+			         </div>
+			       </div>
+			     </form>
+			   </div>
+			 </div>
+
+
+            </div>
         </div>
   </body>
 </html>

@@ -8,39 +8,21 @@ autoIncrement.initialize(db);
 
 var userSchema = mongoose.Schema({
     _id              : Number,
-    local            : {
-        email        : String,
-        password     : String,
-        name         : String,
-    },
-    facebook         : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    },
-    naver          : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    },
-    kakao           : {
-        id           : String,
-        token        : String,
-        email        : String,
-        name         : String
-    },
+    userid           : String,
+    password         : String,
+    token            : String,
+    email            : String,
+    name             : String,
     phone_number     : String,
     myprof_img       : String,
     memos: [{
+        _id    : Number,
         content: String,
         regdate: {
             type: Date,
             default: Date.now()
         }
     }]
-
 });
 
 
@@ -51,10 +33,12 @@ userSchema.methods.generateHash = function(password) {
 
 // checking if password is valid
 userSchema.methods.validPassword = function(password) {
-    return bcrypt.compareSync(password, this.local.password);
+    return bcrypt.compareSync(password, this.password);
 };
 
 userSchema.plugin(autoIncrement.plugin, {model: 'userModel', field: '_id', startAt: 1, incrementBy: 1});
+userSchema.plugin(autoIncrement.plugin, {model: 'userModel', field: 'memos._id', startAt: 1, incrementBy: 1});
+
 
 var User = db.model('userModel', userSchema);
 

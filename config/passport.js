@@ -31,17 +31,19 @@ module.exports = function(passport) {
           //  profileFields   : ['id', 'name', 'email'],
         },
         function(token, refreshToken, profile, done) {
-            User.findOne({'kakao.id': profile.id}, function(err, user) {
+            User.findOne({'userid': profile.id}, function(err, user) {
                 if (err)
                       return done(err);
                 if (user) {
                       return done(null, user); // user found, return that user
                 } else {
                       console.log('kakao profile=', profile);
+                      console.log('kakao profile=', profile._json.properties.profile_image);
                       var newUser         = new User();
-                      newUser.kakao.id    = profile.id;
-                      newUser.kakao.token = token;
-                      newUser.kakao.name  = profile.username;
+                      newUser.userid    = profile.id;
+                      newUser.token     = token;
+                      newUser.name      = profile.username;
+                      newUser.myprof_img = profile._json.properties.profile_image;
                       newUser.save(function(err) {
                           if (err)
                               throw err;
@@ -86,17 +88,18 @@ module.exports = function(passport) {
         },
     function(token, refreshToken, profile, done) {
         process.nextTick(function() {
-            User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
+            User.findOne({ 'userid' : profile.id }, function(err, user) {
                 if (err)
                     return done(err);
                 if (user) {
                     return done(null, user); // user found, return that user
                 } else {
+                    console.log('facebook profile=', profile);
                     var newUser            = new User();
-                    newUser.facebook.id    = profile.id;
-                    newUser.facebook.token = token;
-                    newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName;
-                    newUser.facebook.email = profile.emails[0].value || null;
+                    newUser.userid    = profile.id;
+                    newUser.token = token;
+                    newUser.name  = profile.name.givenName + ' ' + profile.name.familyName;
+                    newUser.email = profile.emails[0].value || null;
                     newUser.save(function(err) {
                         if (err)
                             throw err;
@@ -114,7 +117,7 @@ module.exports = function(passport) {
            passReqToCallback : true
        },
        function(req, email, password, done) {
-           User.findOne({ 'local.email' :  email }, function(err, user) {
+           User.findOne({ 'email' :  email }, function(err, user) {
 
                if (err)
                    return done(err);
@@ -141,17 +144,17 @@ module.exports = function(passport) {
     function(req, email, password, done) {
 
         process.nextTick(function() {
-        User.findOne({ 'local.email' :  email }, function(err, user) {
+        User.findOne({ 'email' :  email }, function(err, user) {
             if (err)
                 return done(err);
             if (user) {
                 return done(null, false, req.flash('signupMessage', '회원가입이 되어 있는 이메일입니다.'));
             } else {
                 var newUser            = new User();
-                newUser.local.email    = email;
-                newUser.local.password = newUser.generateHash(password);
+                newUser.email    = email;
+                newUser.password = newUser.generateHash(password);
                 newUser.phone_number   = req.body.phone_number;
-                newUser.local.name     = req.body.name;
+                newUser.name     = req.body.name;
                 console.log('newUser=', newUser);
                 newUser.save(function(err) {
                     if (err)
