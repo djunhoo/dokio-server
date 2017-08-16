@@ -8,7 +8,8 @@
   <body>
     <h1><%= title %></h1>
     <a href="/dokio/search_list">도키오</a><br>
-    <a href="/dokio/<%=doc._id%>/review/write">리뷰쓰기</a>
+    <a href="/dokio/<%=doc._id%>/review/write">리뷰</a><br>
+
 
     <table width =400 border="1">
       <tr>
@@ -51,8 +52,8 @@
       <table width="400" border="1">
       <% for(var i=0, arr=doc.reviews, len=arr.length; i<len, dokio=arr[i]; i++) {%>
       <tr>
-      <th>user</th>
-        <td width="30"><a href="/dokio/<%=doc._id%>/review/<%=dokio.user_id%>"><%=dokio.content%></a></td>
+      <th>username</th>
+        <td width="30"><a href="/dokio/<%=doc._id%>/review/<%=dokio._id%>"><%=dokio.username%></a></td>
         </tr>
         <tr>
         <th>content</th>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8">
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <form method="post">
+    <table width="400" border="1">
+
+    	<tr>
+        <th>_id</th>
+        <td><input type="text" name="_id" ></td>
+      </tr>
+      <tr>
+    		<th>내용</th>
+    		<td><textarea name="content" rows="5" cols="30"></textarea></td>
+    	</tr>
+    		<tr>
+    	    <th>name</th>
+    	    <td><input type="text" name="name" ></td>
+    	  </tr>
+    	  	<tr>
+    	      <th>category</th>
+    	      <td><input type="text" name="category" ></td>
+    	    </tr>
+    	    	<tr>
+    	        <th>address</th>
+    	        <td><input type="text" name="address" ></td>
+    	      </tr>
+    	      	<tr>
+    	          <th>price</th>
+    	          <td><input type="text" name="price" ></td>
+    	        </tr>
+    	        	<tr>
+    	            <th>phonenumber</th>
+    	            <td><input type="text" name="phonenumber" ></td>
+    	          </tr>
+
+    	<tr>
+    		<td colspan="2">
+    			<input type="submit" value="쓰기">
+    			<input type="reset" value="취소">
+    		</td>
+    	</tr>
+    </table>
+
+    </form>
+  </body>
+</html>

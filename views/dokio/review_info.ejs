@@ -7,20 +7,13 @@
   </head>
   <body>
     <h1><%= title %></h1>
-
+    <a href="/dokio/<%=dokio_id%>/review/update/<%=review_id%>">수정</a>
     <table width="400" border="1">
-    	<tr>
+      <tr>
     		<th>내용</th>
-    		<td><textarea name="content" rows="5" cols="30"></textarea></td>
+    		<td><pre><%=rev.reviews%></pre></td>
     	</tr>
-    	<tr>
-    		<td colspan="2">
-    			<input type="submit" value="쓰기">
-    			<input type="reset" value="취소">
-    		</td>
-    	</tr>
+      <tr>
     </table>
-
-
   </body>
 </html>
