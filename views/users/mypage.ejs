@@ -5,14 +5,12 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <!-- Latest compiled and minified CSS -->
+    <link rel='stylesheet' href='/stylesheets/pet.css' />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-    <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
+    <script src="/javascripts/mypet.js"/></script>
   </head>
   <body>
         <div class="navbar navbar-custom navbar-fixed-top">
@@ -65,7 +63,7 @@
 			   <div class="col-md-4 col-sm-6 col-xs-12">
 			     <div class="text-center">
 					<% if(user.myprof_img) { %>
-			       		<img src="<%= user.myprof_img %>" class="img-circle img-thumbnail">
+			       		<img src="<%= user.myprof_img %>" class="img-circle img-thumbnail" width="250" hegiht="250">
 					<% } else { %>
 						<img src="https://s3.ap-northeast-2.amazonaws.com/dokio2/default_user.png" class="avatar img-circle img-thumbnail" width="250" hegiht="250">
 					<% } %>
@@ -105,12 +103,102 @@
 			           <a href="/users/edit/<%= user._id %>" type="button" class="btn btn-primary">정보 수정</a>
 			         </div>
 			       </div>
-			     </form>
-			   </div>
-			 </div>
-
-
+           </form>
+         </div>
+          <hr>
+          <div class="col-md-8">
+           <br>
+            <div class="row">
+        <div class="col-xs-12 col-sm-offset-3 col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading c-list">
+                    <span class="title">나의 반려동물들</span>
+                    <ul class="pull-right c-controls">
+                        <li><a id="form_add"><i class="glyphicon glyphicon-plus"></i></a></li>
+                        <li><a id="form_remove"><i class="glyphicon glyphicon-minus"></i></a></li>
+                    </ul>
+                </div>
+                
+                <ul class="list-group" id="contact-list">
+                    <li class="list-group-item">
+                        <div class="col-xs-12 col-sm-3">
+                            <img src="https://s3.ap-northeast-2.amazonaws.com/dokio2/KakaoTalk_20170817_115010835.jpg" class="img-responsive img-circle"/>
+                        </div>
+                        <div class="col-xs-12 col-sm-9">
+                            <span class="name">꼴통이</span><br/>
+                            <span class="sex">중성</span>&nbsp;&nbsp;
+                            <span class="age">7살</span>&nbsp;&nbsp;
+                            <span class="age">10kg</span>&nbsp;&nbsp;
+                            <span class="category">말티즈</span><br/>       
+                        </div>
+                        <div class="clearfix"></div>
+                    </li>
+                    <li id="pet_form" class="list-group-item" style="display:none">
+                        <div class="col-xs-12 col-sm-9">
+                          <form action="/users/pet/write" method="post" enctype="multipart/form-data"> 
+                            <h5>반려동물을 추가해주세요.</h5>
+                            <label>이름</label><br>
+                            <input type="text" name="name" class="form-control" placeholder="이름"><br>
+                            <label>나이</label><br>
+                            <input type="number" name="age" class="form-control" placeholder="나이"><br>
+                            <label>성별</label><br>
+                            <select name="sex" class="selectpicker" data-style="btn-default">
+                               <option value="남자">남자</option>
+                               <option value="남자">여자</option>
+                               <option value="남자">중성</option>  
+                            </select><br><br>
+                            <label>품종</label><br>
+                            <select name="category" class="selectpicker" data-style="btn-default" data-live-search="true">
+                               <% for(var i=1; i<187; i++) { %>
+                                  <option token="<%= categorys[i].category_name %>"><%= categorys[i].category_name %></option>  
+                               <% } %>
+                            </select><br>
+                              <br>
+                            <label>몸무게</label><br>
+                            <input type="number" name="age" class="form-control" placeholder="무게"><br>
+                            <label>사진</label><br>
+                            <input type="file" name="petfile" class="form-control"><br>
+                            <input type="submit" class="btn btn-primary" value="추가">
+                          </form>    
+                        </div>
+                        <div class="clearfix"></div>
+                    </li>  
+                </ul>
             </div>
         </div>
+  </div>
+      
+          </div>
+          
+			    </div>
+         </div>
+       </div>  
+      </div>
+      
+      </div>
+          
   </body>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js"></script>
+    <script>
+    $(function () {
+    $(document).ready(function() {  
+        $('.selectpicker').selectpicker();
+        $('#form_remove').css('display','none');
+        $('#form_add').click(function(e) {
+            $('#pet_form').toggle();
+            $('#form_add').css('display','none');
+            $('#form_remove').toggle();
+        });
+        $('#form_remove').click(function(e) {
+            $('#pet_form').css('display','none');
+            $('#form_add').toggle();
+            $('#form_remove').css('display','none');
+        });  
+    });
+
+    });
+  </script>
 </html>

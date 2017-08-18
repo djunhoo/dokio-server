@@ -7,6 +7,6 @@ var petcategorySchema = new Schema({
 	category_name: String
 })
 
-var petcategorySchema = db.model('petcategory', petcategorySchema);
+var petcategoryModel = db.model('petcategory', petcategorySchema);
 
-module.exports = petcategorySchema;
+module.exports = { petcategoryModel: petcategoryModel, petcategorySchema: petcategorySchema};

@@ -5,6 +5,7 @@ module.exports= function (passport) {
 	var AWS = require('aws-sdk');
 	var router = express.Router();
 	var s3 = new AWS.S3();
+	var PetCategory = require('../models/petcategory').petcategoryModel;
 
 
 
@@ -34,15 +35,34 @@ module.exports= function (passport) {
 		});
 	});
 
+
 	// 카카오 인증
 	router.get('/auth/kakao', passport.authenticate('kakao', function(req, res) {
 		console.log('/auth/kakao failed, stopped');
 	}));
 	router.get('/auth/kakao/callback',
 	        passport.authenticate('kakao', {
-	        	successRedirect : '/',
-	        	failureRedirect : '/users/login',
+	        	successRedirect : '/users/kakaosuccess',
+	        	failureRedirect : '/users/kakaofailed',
 	}));
+
+	router.get('/kakaosuccess', function(req, res, next) {
+		console.log('콘솔성공');
+		res.json({
+			success_code: 1,
+			result: null
+		});
+	});
+
+	router.get('/kakaofailed', function(req, res, next) {
+		res.json({
+			success_code: 0,
+			message: "실패",
+			result: null
+		});
+	});
+
+
 
 	// 네이버 인증
 	router.get('/auth/naver',
@@ -58,13 +78,28 @@ module.exports= function (passport) {
 	    	res.redirect('/');
 	    });
 
+	router.get('/facebooksuccess', function(req, res, next) {
+		res.status(401).json({
+			success_code: 1,
+			result: null
+		});
+	});	
+
+	router.get('/facebookfailed', function(req, res, next) {
+		res.json({
+			success_code: 0,
+			message: "실패",
+			result: null
+		});
+	});
+
 	// 페이스북 인증 라우터
 
 	router.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 	router.get('/auth/facebook/callback',
 	        passport.authenticate('facebook', {
-	        	successRedirect : '/',
-	        	failureRedirect : '/users/login',
+	        	successRedirect : '/users/facebooksuccess',
+	        	failureRedirect : '/users/facebookfailed',
 	}));
 
 	// 로컬-로그인 인증 라우터
@@ -141,6 +176,40 @@ module.exports= function (passport) {
 		});
 	});
 
+	router.post('/pet/write', function(req, res, next) {
+		var form = new formidable.IncomingForm();
+		form.parse(req, function(err, fields, files) {
+			console.log('files=', files)
+			var params = {
+				Bucket: 'dokio2',
+				Key: files.petfile.name,
+				ACL:'public-read',
+				Body: require('fs').createReadStream(files.petfile.path)
+			};
+			s3.upload(params, function(err, data) {
+				if(err) {
+					console.log('err=', err);
+				}
+				else {
+					var pet_data = {
+						name    : fields.name,
+						age     : fields.age,
+						sex		: fields.sex,
+						weight	: fields.weight,
+						//categorys : 
+					};
+					console.log('form_data=', form_data);
+					User.update({ _id: req.user._id }, form_data, function(err, doc) {
+							if(err) return next(err);
+							res.locals.login = req.isAuthenticated();
+							console.log('user=', doc);
+							res.render('users/mypage', {title: "내 정보 조회", user:req.user});
+					});
+				}
+			});
+		});
+	});
+
 	router.get('/edit/:user_id', function(req, res, next) {
 		console.log('hi li');
 		if (req.isAuthenticated())
@@ -171,17 +240,20 @@ module.exports= function (passport) {
 
 
 	router.get('/:user_id', function(req, res, next) {
-		if (req.isAuthenticated())
-		{
-			user_id = req.params.user_id;
-			User.findOne({_id: user_id}, function(err, user) {
-				res.locals.login = req.isAuthenticated();
-				console.log('user=', user);
-				res.render('users/mypage', {title: "내 정보 조회", user:user});
+		PetCategory.find({}, function (err, doc) {
+			if(err) next(err);
+			if (req.isAuthenticated())
+			{
+				user_id = req.params.user_id;
+				User.findOne({_id: user_id}, function(err, user) {
+					res.locals.login = req.isAuthenticated();
+					console.log('user=', user);
+					res.render('users/mypage', {title: "내 정보 조회", user:user, categorys: doc});
+				});
+			} else {
+				res.redirect('/users/login');
+			}
 			});
-		} else {
-			res.redirect('/users/login');
-		}
 	});
 
 	router.get('/json/:user_id', function(req, res, next) {

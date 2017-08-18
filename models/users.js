@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
+var PetModelSchema = require('./pet').petSchema;
 var db = require('./db');
 
 var Schema = mongoose.Schema;
@@ -22,7 +23,8 @@ var userSchema = mongoose.Schema({
             type: Date,
             default: Date.now()
         }
-    }]
+    }],
+    pets: [PetModelSchema]
 });
 
 
