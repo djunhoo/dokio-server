@@ -42,26 +42,9 @@ module.exports= function (passport) {
 	}));
 	router.get('/auth/kakao/callback',
 	        passport.authenticate('kakao', {
-	        	successRedirect : '/users/kakaosuccess',
-	        	failureRedirect : '/users/kakaofailed',
+	        	successRedirect : '/',
+	        	failureRedirect : '/users/login',
 	}));
-
-	router.get('/kakaosuccess', function(req, res, next) {
-		console.log('콘솔성공');
-		res.json({
-			success_code: 1,
-			result: null
-		});
-	});
-
-	router.get('/kakaofailed', function(req, res, next) {
-		res.json({
-			success_code: 0,
-			message: "실패",
-			result: null
-		});
-	});
-
 
 
 	// 네이버 인증
@@ -78,28 +61,13 @@ module.exports= function (passport) {
 	    	res.redirect('/');
 	    });
 
-	router.get('/facebooksuccess', function(req, res, next) {
-		res.status(401).json({
-			success_code: 1,
-			result: null
-		});
-	});	
-
-	router.get('/facebookfailed', function(req, res, next) {
-		res.json({
-			success_code: 0,
-			message: "실패",
-			result: null
-		});
-	});
-
 	// 페이스북 인증 라우터
 
 	router.get('/auth/facebook', passport.authenticate('facebook', { scope : ['email'] }));
 	router.get('/auth/facebook/callback',
 	        passport.authenticate('facebook', {
-	        	successRedirect : '/users/facebooksuccess',
-	        	failureRedirect : '/users/facebookfailed',
+	        	successRedirect : '/',
+	        	failureRedirect : '/users/login',
 	}));
 
 	// 로컬-로그인 인증 라우터
