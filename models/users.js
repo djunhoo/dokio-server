@@ -16,14 +16,6 @@ var userSchema = mongoose.Schema({
     name             : String,
     phone_number     : String,
     myprof_img       : String,
-    memos: [{
-        _id    : Number,
-        content: String,
-        regdate: {
-            type: Date,
-            default: Date.now()
-        }
-    }],
     pets: [PetModelSchema]
 });
 
@@ -39,8 +31,6 @@ userSchema.methods.validPassword = function(password) {
 };
 
 userSchema.plugin(autoIncrement.plugin, {model: 'userModel', field: '_id', startAt: 1, incrementBy: 1});
-userSchema.plugin(autoIncrement.plugin, {model: 'userModel', field: 'memos._id', startAt: 1, incrementBy: 1});
-
 
 var User = db.model('userModel', userSchema);
 
