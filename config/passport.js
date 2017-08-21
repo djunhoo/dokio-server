@@ -6,12 +6,12 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var NaverStrategy    = require('passport-naver').Strategy;
 var KakaoStrategy = require('passport-kakao').Strategy;
 var jwt = require('jwt-simple');
-
+var configAuth = require('./auth');
 
 // 사용자 모델
 var User            = require('../models/users');
 
-var configAuth = require('./auth');
+
 
 // App.Exports
 module.exports = function(passport) {

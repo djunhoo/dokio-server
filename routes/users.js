@@ -6,6 +6,8 @@ module.exports= function (passport) {
 	var router = express.Router();
 	var s3 = new AWS.S3();
 	var PetCategory = require('../models/petcategory').petcategoryModel;
+	var jwt = require('jwt-simple');
+	var configAuth = require('./auth');
 
 
 
@@ -105,7 +107,8 @@ module.exports= function (passport) {
 
 	router.get('/mypage', function(req, res) {
 		console.log('token=', req.body.token);
-		User.findOne({token: req.body.token}, function(err, user) {
+		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+		User.findOne({email: decoded_email}, function(err, user) {
 				if (err)
 				    console.log('err=', err);
 				if (user) {
