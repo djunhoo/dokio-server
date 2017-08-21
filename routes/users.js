@@ -105,8 +105,10 @@ module.exports= function (passport) {
 
 	// 프로필 라우터
 
-	router.post('/mypage', function(req, res) {
-		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+	router.get('/mypage/:token', function(req, res) {
+		console.log('token=', req.params.token);
+		var decoded_email = jwt.decode(req.params.token, configAuth.jwt_secret);
+		console.log('decoded_email=', decoded_email);
 		User.findOne({email: decoded_email}, function(err, user) {
 			console.log('user=', user);
 		        if (err)
@@ -128,6 +130,8 @@ module.exports= function (passport) {
 				}
 		});
 	});
+
+
 
 	router.get('/signup', function (req, res) {
 	    res.render('users/joinform', { message: req.flash('signupMessage'), title:'로그인' });
