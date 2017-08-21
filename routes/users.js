@@ -107,8 +107,8 @@ module.exports= function (passport) {
 
 	router.post('/mypage', function(req, res) {
 		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
-		User.findOne({email: decoded_email}, function(err, doc) {
-			console.log('user=', doc);
+		User.findOne({email: decoded_email}, function(err, user) {
+			console.log('user=', user);
 		        if (err)
 				    console.log('err=', err);
 				if (doc) {
