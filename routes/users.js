@@ -103,14 +103,26 @@ module.exports= function (passport) {
 
 	// 프로필 라우터
 
-	router.get('/profile', isLoggedIn, function(req, res) {
-		console.log('req.user=', req.user);
-		User.findOne({_id: req.user._id}, function(err, doc) {
-			if(err) console.log(err);
-			console.log('doc_user=', doc);
-			res.render('users/profile', {
-			    user : doc
-			});
+	router.get('/mypage', function(req, res) {
+		console.log('token=', req.body.token);
+		User.findOne({token: req.body.token}, function(err, user) {
+				if (err)
+				    console.log('err=', err);
+				if (user) {
+				    // 마이페이지 정보
+				    res.json({
+				    	success_code: 1,
+				    	result: {
+				    		user: user
+				    	}
+				    });
+				} else {
+				    res.json({
+				    	success_code: 0,
+				    	message: "토큰이 잘못됬거나 User가 없습니다.",
+				    	result: null
+				    });
+				}
 		});
 	});
 
