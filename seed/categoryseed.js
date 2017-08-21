@@ -7,7 +7,7 @@ var options = {
     encoding: 'binary'
 };
 
-var PetCategory = require('../models/petcategory');
+var PetCategory = require('../models/petcategory').petcategorySchema;
 
 
 request(options, function(err, response, body) {

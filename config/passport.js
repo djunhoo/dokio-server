@@ -5,6 +5,8 @@ var LocalStrategy   = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var NaverStrategy    = require('passport-naver').Strategy;
 var KakaoStrategy = require('passport-kakao').Strategy;
+var jwt = require('jwt-simple');
+
 
 // 사용자 모델
 var User            = require('../models/users');
@@ -156,6 +158,7 @@ module.exports = function(passport) {
                 newUser.password = newUser.generateHash(password);
                 newUser.phone_number   = req.body.phone_number;
                 newUser.name     = req.body.name;
+                newUser.token    = jwt.encode(email, configAuth.jwt_secret);
                 console.log('newUser=', newUser);
                 newUser.save(function(err) {
                     if (err)

@@ -76,9 +76,28 @@ module.exports= function (passport) {
 	    res.render('users/newlogin', { message: req.flash('loginMessage'), title:'로그인' });
 	});
 
+    router.get('/login_success', function(req, res, next) {
+        console.log('user=', req.user);
+        res.json({
+            success_code: 1,
+            result: {
+               token: req.user.token
+            }
+        });
+    });
+
+    router.get('/login_failed', function(req, res, next) {
+       console.log('user=', req.user);
+       res.json({
+            success_code: 0,
+            message: req.flash('loginMessage'),
+            result: null
+       });
+    });
+
 	router.post('/login', passport.authenticate('local-login', {
-	        successRedirect : '/',
-	        failureRedirect : '/users/login',
+	        successRedirect : '/users/login_success',
+	        failureRedirect : '/users/login_failed',
 	        failureFlash : true // allow flash messages
 	}));
 
@@ -102,9 +121,24 @@ module.exports= function (passport) {
 	    res.render('users/newsignup', { message: req.flash('signupMessage'), title:'회원가입' });
 	});
 
-	router.post('/signup', passport.authenticate('local-signup', {
-	        successRedirect : '/users/login',
-	        failureRedirect : '/users/newsignup',
+    router.get('/success_signup', function(req, res, next) {
+	    res.json({
+            success_code:1,
+            result: null
+        });
+	});
+
+    router.get('/failed_signup', function(req, res, next) {
+        res.json({
+            success_code:0,
+            message: req.flash('signupMessage'),
+            result: null
+        });
+    });
+    
+    router.post('/signup', passport.authenticate('local-signup', {
+	        successRedirect : '/users/success_signup',
+	        failureRedirect : '/users/failed_signup',
 	        failureFlash : true
 	}));
 	router.get('/logout', function(req, res) {
