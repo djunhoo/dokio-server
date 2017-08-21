@@ -1,7 +1,6 @@
 // cofing/auth.js
 
 module.exports = {
-
     'facebookAuth' : {
         'clientID'      : '133161083958817',
         'clientSecret'  : '472deedc4a30805ed210f5e797a741fc', // your App Secret
@@ -19,8 +18,4 @@ module.exports = {
         'callbackURL'   : 'http://keonho.xyz:3000/users/auth/kakao/callback'
     },
     'jwt_secret' : 'keonho'
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> d7d17c5483be6f5dade3095ad2a444f65ab52c3d
