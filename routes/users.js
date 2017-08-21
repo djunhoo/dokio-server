@@ -111,7 +111,7 @@ module.exports= function (passport) {
 			console.log('user=', user);
 		        if (err)
 				    console.log('err=', err);
-				if (doc) {
+				if (user) {
 				    // 마이페이지 정보
 				    res.json({
 				    	success_code: 1,
