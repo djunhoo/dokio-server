@@ -20,6 +20,6 @@ var dokioreviewSchema = new Schema({
 
 // dokioreviewSchema.plugin(autoIncrement.plugin, {model: 'dokioreview', field: '_id', startAt:1, incrementBy: 1})
 
-var dokioreviewModel = db.model('dokioreview', dokioreviewSchema);
+var dokioreview = db.model('dokioreview', dokioreviewSchema);
 
-module.exports = dokioreviewSchema;
+module.exports = {dokioreviewSchema: dokioreviewSchema, dokioreview: dokioreview};

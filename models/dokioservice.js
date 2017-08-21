@@ -5,8 +5,8 @@ var Schema = mongoose.Schema;
 
 var dokioserviceSchema = new Schema({
 	service_name: String
-})
+});
 
-// var dokioserviceModel = db.model('dokioservice', dokioserviceSchema);
+// var dokioservice = db.model('dokioservice', dokioserviceSchema);
 
 module.exports = dokioserviceSchema;
