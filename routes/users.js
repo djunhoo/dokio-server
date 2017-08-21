@@ -105,13 +105,13 @@ module.exports= function (passport) {
 
 	// 프로필 라우터
 
-	router.get('/mypage', function(req, res) {
-		console.log('token=', req.body.token);
+	router.post('/mypage', function(req, res) {
 		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
-		User.findOne({email: decoded_email}, function(err, user) {
+		User.findOne({email: decoded_email}, function(err, doc) {
+			console.log('user=', doc);
 				if (err)
 				    console.log('err=', err);
-				if (user) {
+				if (doc) {
 				    // 마이페이지 정보
 				    res.json({
 				    	success_code: 1,
