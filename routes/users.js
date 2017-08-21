@@ -7,7 +7,7 @@ module.exports= function (passport) {
 	var s3 = new AWS.S3();
 	var PetCategory = require('../models/petcategory').petcategoryModel;
 	var jwt = require('jwt-simple');
-	var configAuth = require('./auth');
+	var configAuth = require('../config/auth');
 
 
 
