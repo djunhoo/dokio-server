@@ -1,5 +1,5 @@
 // config/passport.js
-
+// passport hi
 // 인증 정보
 var LocalStrategy   = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
