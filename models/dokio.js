@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var db = require('./db');
-var Petcategories = require('./petcategory');
-var Dokioservice = require('./dokioservice');
+var Petcategories = require('./petcategory').petcategorySchema;
+var Dokioservice = require('./dokioservice').dokioserviceSchema;
 var Dokiotime = require('./dokiotime');
 var Dokioreview = require('./dokioreview').dokioreviewSchema;
 
@@ -14,25 +14,36 @@ autoIncrement.initialize(db);
 var dokioSchema = new Schema({
 	_id: Number,
 	name: String,
-	category: String,
+	category: {
+		type: String,
+        enum : ['호텔', '병원', '카페'],
+        default: '호텔'
+	},
 	address: String,
 	content: String,
-	price: String,
-	img_url: String,
-	petcategories: String,
+	price: [{
+		weight: Number,
+		price: Number
+	}],
+	img_url: [String],
+	petcategories: [{
+		type: Schema.Types.ObjectId,
+		ref:'petcategory'
+	}],
 	phonenumber: String,
 	rule: String,
 	events: String,
-	services: [Dokioservice],
-	times: [Dokiotime],
+	services: [{
+		type: Schema.Types.ObjectId,
+		ref:'dokioservice'
+	}],
+	times: Dokiotime,
 	reviews: [Dokioreview],
 	like_count: {type: Number, default: 0}
 
 });
 
 dokioSchema.plugin(autoIncrement.plugin, {model: 'dokio', field: '_id', startAt:1, incrementBy: 1})
-
-// Dokioreview.plugin(autoIncrement.plugin, {model: 'Dokioreview', field: '_id', startAt:1, incrementBy: 1})
 
 var dokioModel = db.model('dokio', dokioSchema);
 

@@ -7,6 +7,6 @@ var dokioserviceSchema = new Schema({
 	service_name: String
 });
 
-// var dokioservice = db.model('dokioservice', dokioserviceSchema);
+var dokioserviceModel = db.model('dokioservice', dokioserviceSchema);
 
-module.exports = dokioserviceSchema;
+module.exports = {dokioserviceModel: dokioserviceModel, dokioserviceSchema: dokioserviceSchema};
