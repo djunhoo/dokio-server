@@ -135,11 +135,7 @@ module.exports= function (passport) {
             result: null
         });
     });
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> d7d17c5483be6f5dade3095ad2a444f65ab52c3d
     router.post('/signup', passport.authenticate('local-signup', {
 	        successRedirect : '/users/success_signup',
 	        failureRedirect : '/users/failed_signup',
