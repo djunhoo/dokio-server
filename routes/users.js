@@ -107,13 +107,9 @@ module.exports= function (passport) {
 
 	router.post('/mypage', function(req, res) {
 		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
-<<<<<<< HEAD
-        User.findOne({email: decoded_email}, function(err, doc) {
-=======
 		User.findOne({email: decoded_email}, function(err, doc) {
 			console.log('user=', doc);
->>>>>>> c82b031f2a1f01fe4ad16598edeed08fa051b246
-				if (err)
+		        if (err)
 				    console.log('err=', err);
 				if (doc) {
 				    // 마이페이지 정보
