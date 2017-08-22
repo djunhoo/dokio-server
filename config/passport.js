@@ -120,18 +120,16 @@ module.exports = function(passport) {
            passReqToCallback : true
        },
        function(req, email, password, done) {
+           console.log('email=', email);
+           console.log('password=', password);
            User.findOne({ 'email' :  email }, function(err, user) {
-
+              console.log('user=',user);
                if (err)
                    return done(err);
-
                if (!user)
                    return done(null, false, req.flash('loginMessage', '아이디가 없습니다.'));
-
-
                if (!user.validPassword(password))
                    return done(null, false, req.flash('loginMessage', '비밀번호가 틀렸습니다.'));
-
                return done(null, user);
            });
 

@@ -79,12 +79,9 @@ module.exports= function (passport) {
 	});
 
     router.get('/login_success', function(req, res, next) {
-        console.log('user=', req.user);
+        console.log('success_user=', req.user);
         res.json({
-            success_code: 1,
-            result: {
-               token: req.user.token
-            }
+           
         });
     });
 
@@ -92,16 +89,48 @@ module.exports= function (passport) {
        console.log('user=', req.user);
        res.json({
             success_code: 0,
-            message: req.flash('loginMessage'),
+            message: req.flash('loginMessage')[0],
             result: null
        });
     });
 
-	router.post('/login', passport.authenticate('local-login', {
-	        successRedirect : '/users/login_success',
-	        failureRedirect : '/users/login_failed',
-	        failureFlash : true // allow flash messages
-	}));
+    router.post('/login', passport.authenticate('local-login', {
+            failureRedirect: '/users/login_failed',
+            failureFlash: true
+          }), function(req, res) {
+	      //successRedirect : '/users/login_success',
+	     // failureRedirect : '/users/login_failed';
+	     // failureFlash : true; // allow flash messages
+          if(!req.user) {
+            console.log('실패');
+            res.json({
+                 about:1
+            });
+          } else {
+          res.json({
+             success_code:1,
+             result: {
+                token:req.user.token
+             }
+          });
+          }
+	});
+
+ /*    router.post('/login', function(req, res, next) {
+
+        passport.authenticate('local-login', function(err, user) {
+            if(!user) {
+                res.json({
+                    success:e
+                });
+            } else {
+               res.json({
+
+                    success:1
+               });
+            }
+        });
+    }); */
 
 	// 프로필 라우터
 
@@ -201,7 +230,7 @@ module.exports= function (passport) {
     router.get('/failed_signup', function(req, res, next) {
         res.json({
             success_code:0,
-            message: req.flash('signupMessage'),
+            message: req.flash('signupMessage')[0],
             result: null
         });
     });
