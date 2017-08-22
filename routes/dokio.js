@@ -11,6 +11,10 @@ router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });
 });
 
+router.get('/add_dokio', function(req, res, next) {
+    res.render('dokio/add_dokio', { title: '호텔 추가' })
+})
+
 //도키오 검색 페이지
 router.get('/search_list', function(req, res, next) {
     DokioModel.find({}, null, { sort: { date: -1 } }, function(err, docs) {
@@ -36,20 +40,6 @@ router.get('/:dokio_id', function(req, res, next) {
     });
 });
 
-//도키오 즐겨찾기 페이지
-
-//도키오 추천하는 페이지	/dokio/like POST
-
-//리뷰 리스트
-// router.get('/:dokio/review', function(req, res, next){
-// 	var dokio_id = req.params.dokio_id;
-// 	// console.log('review dokio_id = ', dokio_id);
-// 	DokioModel.find({}, null, {sort: {date: -1}}, function(err, docs){
-// 		if(err) return next(err);
-// 		console.log('dokio list = ', docs);
-// 		res.render('dokio/review_list', {title:'리뷰 리스트', docs:docs});
-// 	// res.send("OK");
-// })
 
 router.get('/:dokio_id/review/write', function(req, res, next) {
     var dokio_id = req.params.dokio_id;
@@ -240,74 +230,12 @@ router.post('/:dokio_id/review/delete_complete', function(req, res, next) {
     })
 });
 
-router.get('/dokio/add_dokio', function(req, res, next) {
-    res.render('dokio/add_dokio', { title: '호텔 추가' })
-})
+
 
 //호텔 추가 페이지 삭제 가능
 router.post('/dokio/add_dokio', function(req, res, next) {
-    // var dokio_id = req.body._id;
-    var dokio_name = req.body.name;
-    var dokio_category = req.body.category;
-    var dokio_address = req.body.address;
-    var dokio_content = req.body.content;
-    var dokio_price = req.body.price;
-    var dokio_img_url = req.body.img_url;
-    var dokio_petcategory = req.body.petcategory;
-    var dokio_phonenumber = req.body.phonenumber;
-    var dokio_rule = req.body.rule;
-    var dokio_events = req.body.events;
-    var dokio_services = req.body.services;
-    var dokio_times = req.body.times;
-    // var dokio_reviews = req.body.reviews;
-    var dokio_like_count = req.body.like_count;
 
-    var data = {
-        // _id: dokio_id,
-        name: dokio_name,
-        category: dokio_category,
-        address: dokio_address,
-        content: dokio_content,
-        price: dokio_price,
-        img_url: dokio_img_url,
-        petcategory: dokio_petcategory,
-        phonenumber: dokio_phonenumber,
-        rule: dokio_rule,
-        events: dokio_events,
-        services: dokio_services,
-        times: dokio_times,
-        // reviews: dokio_reviews,
-        like_count: dokio_like_count,
-    }
 
-    var dokio = new DokioModel(data);
-    dokio.save(function(err, doc) {
-        if (err) console.log('add_dokio err = ', err);
-        // res.json(data)
-        res.redirect('/dokio/search_list')
-    })
 
 })
-
-//도키오 서비스 추가 화면
-// router.get('/dokio/add_dokio_service', function(req, res, next){
-// 	res.render('add_dokio_service', {title: 'service 추가'})
-// })
-
-// router.post('/dokio/add_dokio_service', function(req, res, next){
-// 	// var dokio_id = req.body._id;
-// 	var service_name = req.body.service_name;
-
-// 	var data = {
-// 		service_name: service_name
-// 	}
-
-// 	var dokioservice = new DokioserviceModel(data);
-// 	dokioservice.save(function(err, doc){
-// 		if(err) console.log('add_dokio_service err = ', err);
-// 		// res.json(data)
-// 		res.redirect('/dokio/search_list')
-// 	})
-
-// })
 module.exports = router;
