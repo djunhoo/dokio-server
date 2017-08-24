@@ -5,9 +5,14 @@
     <title>도키오 추가</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.7.5/js/bootstrap-select.min.js"></script>
     <style>
         body        { padding-top:80px; }
     </style>
+
 </head>
 <body>
 <div class="container">
@@ -17,14 +22,14 @@
     <h1><span class="fa fa-sign-in"></span> 도키오 추가</h1>
 
     <!-- LOGIN FORM -->
-    <form action="/dokio/add_dokio" method="post">
+    <form action="/dokio/add_dokio" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label>이름</label>
             <input type="text" class="form-control" name="name">
         </div>
         <div class="form-group">
             <label>카테고리</label>
-            <select name="category" class="form-control">
+            <select name="dokio_category" class="form-control">
                 <option value="호텔">호텔</option>
                 <option value="병원">병원</option>
                 <option value="카페">카페</option>
@@ -32,29 +37,182 @@
         </div>
         <div class="form-group">
             <label>주소</label>
-            <input type="text" class="form-control" name="address">
+            <input type="text" class="form-control" name="address" cols="30"rows="30">
         </div>
         <div class="form-group">
             <label>소개글</label>
-            <input type="text" class="form-control" name="content">
+            <textarea class="form-control" name="introduce"></textarea>
+        </div>
+        <div class="" id="price">
+            <label>가격
+                <a id="add_price"type="button">
+                    <small>&nbsp;추가</small>
+                </a>
+            </label>
+            <br>
+            <label>&nbsp;<small>최소 무게</small></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label><small>최대 무게</small></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label><small>가격 정보</small></label>
+            <br>
+            <div class='col-sm-3'>
+                <input type='number' class='form-control' name='first' min="1" max="50" step="1">
+            </div>
+            <div class='col-sm-3'>
+                <input type='number' class='form-control' name='last' min="1" max="50" step="1">
+            </div>
+            <div class='col-sm-5'>
+                <input type='number' class='form-control' name='price_info'>
+            </div><br><br>
+        </div><br>
+        <div class="form-group" id="image">
+            <label>이미지
+            <a id="add_image"type="button">
+                <small>&nbsp;추가</small>
+            </a>
+            </label>
+            <br>
+            <div class='col-sm-10'>
+            <input type='file' class='form-control' name='dokiofile'><br>
+            </div>
+        </div>
+        <br>
+        <div class="form-group" id="category">
+            <label>상주견 품종
+            </label><br>
+            <div class="col-sm-10">
+                <select name='pet_category[]' multiple="multiple" id='selectpicker' class='form-control' data-style='btn-default' data-live-search='true'>
+                        <% for(var i=0; i<187; i++) { %>
+                            <option value='<%= categorys[i]._id %>'token='<%= categorys[i].category_name %>'><%= categorys[i].category_name %></option>
+                        <% } %>
+                </select>
+            </div><br><br>
         </div>
         <div class="form-group">
-            <label>가격</label>
-            <input type="text" class="form-control" name="content">
+            <label>전화번호</label>
+            <input type="text" class="form-control" name="phone_number">
         </div>
         <div class="form-group">
-            <label>이미지</label>
-            <input type="file" class="form-control" name="dokiofile">
+            <label>주의사항</label>
+            <textarea class="form-control" name="rule"></textarea>
         </div>
-
+        <div class="form-group">
+            <label>행사 내용</label>
+            <textarea class="form-control" name="event"></textarea>
+        </div>
+        <div class="form-group" id="service">
+            <label>서비스
+                <a id="add_service"type="button">
+                    <small>&nbsp;추가</small>
+                </a>
+            </label><br>
+            <div class="col-sm-10">
+                <select name='service' id='selectpicker_service' class='form-control' data-style='btn-default'>
+                        <% for(var j=0; j<10; j++) { %>
+                            <option value='<%= a[j]._id %>' token='<%= a[j].service_name %>'><%= a[j].service_name %></option>
+                        <% } %>
+                </select><br>
+            </div><br>
+        </div><br>
+        <div class="form-group" id="time">
+            <label>운영시간</label>
+            <br>
+            <div class='col-sm-5'>
+                <small>평일</small>
+            </div>
+            <div class='col-sm-5'>
+                <small>주말</small>
+            </div><br>
+            <div class='col-sm-5'>
+                <input type='text' class='form-control' name='weekday'>
+            </div>
+            <div class='col-sm-5'>
+                <input type='text' class='form-control' name='weekend'>
+            </div><br><br>
+            <div class='col-sm-5'>
+                <small>기타정보</small>
+            </div><br>
+            <div class='col-sm-5'>
+                <input type='text' class='form-control' name='etc'>
+            </div>
+            <br>
+        </div>
+        <br>
         <button type="submit" class="btn btn-info btn-lg btn-block">도키오추가</button>
         <button type="reset" class="btn btn-warning btn-lg btn-block">취소</button>
     </form>
-
     <hr>
 
 </div>
-
 </div>
 </body>
+  <script>
+
+  function a(n) {
+        return n-1;
+  }
+  $(function () {
+    var n = 1;
+    var n_i = 1;
+    var n_c = 1;
+    var n_s = 1;
+      $(document).ready(function() {
+        $('#add_service').click(function(e) {
+            console.log('n=',n_s);
+            if( n_s < 10) {
+                n_s++;
+                $('#service').append("<div><div class='col-sm-10'><select name='service' id='selectpicker_service' class='form-control' data-style='btn-default'><% for(var j=0; j<10; j++) { %><option value='<%= a[j]._id %>'token='<%= a[j].service_name %>'><%= a[j].service_name %></option><% } %></select></div><div class='col-sm-2'><input type='button' class='btn btn-primary' value='삭제' id='remove_service'><br><br></div><div>");
+            }
+        });
+        $('form').on('click', '#remove_service', function(){
+                n_s--;
+                console.log('n_c=',n_s);
+                $(this).parent().parent().remove();
+        });
+        $('#selectpicker').selectpicker();
+        $('#add_category').click(function(e) {
+            console.log('n_c=',n_c);
+            if( n_c < 10) {
+                n_c++;
+                $('#category').append("<div><div class='col-sm-10'><select name='category' id='selectpicker_" +n_c+ "' class='form-control' data-style='btn-default' data-live-search='true'><% for(var i=1; i<187; i++) { %><option token='<%= categorys[i].category_name %>'><%= categorys[i].category_name %><% } %></option></select></div><div class='col-sm-2'><input type='button' class='btn btn-primary' value='삭제' id='remove_category'></div><br><br><div>");
+
+            }
+            $('#selectpicker_' + n_c).selectpicker();
+        });
+        $('form').on('click', '#remove_category', function(){
+                n_c--;
+                console.log('n_c=',n_c);
+                $(this).parent().parent().remove();
+        });
+        $('#add_image').click(function(e) {
+            console.log('n=',n_i);
+            if( n_i < 5) {
+                n_i++;
+                $('#image').append("<div><div class='col-sm-10'><input type='file' class='form-control' name='dokiofile'></div><div class='col-sm-2'><input type='button' class='btn btn-primary' value='삭제' id='remove_image'><br><br></div><div>");
+            }
+        });
+        $('form').on('click', '#remove_image', function(){
+                n_i--;
+                console.log('n=',n);
+                $(this).parent().parent().remove();
+        });
+        $('#add_price').click(function(e) {
+            console.log('n=',n);
+            if( n < 5) {
+                n++;
+                $('#price').append("<div id='form_price_" + n +"'><div class='col-sm-3'><input type='number' class='form-control' name='first'></div><div class='col-sm-3'><input type='number' class='form-control' name='last'></div><div class='col-sm-5'><input type='number' class='form-control' name='price_info'></div><div class='col-sm-1'><input type='button' class='btn btn-primary' id='remove_price' value='삭제'></div><br><br></div>");
+            }
+        });
+        $('form').on('click', '#remove_price', function(){
+                n--;
+                console.log('n=',n);
+                $(this).parent().parent().remove();
+                $(this).remove();
+        });
+       // $('#add_price .')
+      });
+
+  });
+</script>
 </html>
+
+

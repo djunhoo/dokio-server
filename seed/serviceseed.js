@@ -1,6 +1,6 @@
 // serviceseed.js
 var db = require('../models/db');
-var dokioservice = require('../models/dokioservice');
+var dokioservice = require('../models/dokioservice').dokioserviceModel;
 var mongoose = require('mongoose');
 
 var services = [
@@ -8,13 +8,16 @@ var services = [
 		service_name: "픽업"
 	}),
 	new dokioservice({
-		service_name: "간식"
+		service_name: "간식제공"
 	}),
 	new dokioservice({
-		service_name: "목욕"
+		service_name: "목욕/스파"
 	}),
 	new dokioservice({
-		service_name: "미용"
+		service_name: "미용/염색"
+	}),
+	new dokioservice({
+		service_name: "수영"
 	}),
 	new dokioservice({
 		service_name: "CCTV"
@@ -26,19 +29,17 @@ var services = [
 		service_name: "산책"
 	}),
 	new dokioservice({
-		service_name: "훈련"
+		service_name: "훈련/교육"
 	}),
 	new dokioservice({
 		service_name: "예방접종"
-	}),
-	new dokioservice({
-		service_name: "수영장"
 	})
 ];
-
+console.log('services=', services)
 var done = 0;
 for (var i=0; i<services.length; i++) {
 	services[i].save(function(err, result){
+		console.log('result=', result);
 		done++;
 		if(done == services.length) {
 			exit();

@@ -2,17 +2,102 @@ var express = require('express');
 var router = express.Router();
 var DokioModel = require('../models/dokio');
 var DokioreviewModel = require('../models/dokioreview')
-var DokioserviceModel = require('../models/dokioservice')
-
-
-
+var DokioService = require('../models/dokioservice').dokioserviceModel;
+var PetCategory = require('../models/petcategory').petcategoryModel;
+var aws = require('aws-sdk');
+var multer = require('multer');
+var multerS3 = require('multer-s3');
+var memorystorage = multer.memoryStorage()
+var upload = multer({ storage: memorystorage })
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });
 });
 
 router.get('/add_dokio', function(req, res, next) {
-    res.render('dokio/add_dokio', { title: '호텔 추가' })
+    var service_category = null;
+    PetCategory.find({}, function (err, doc) {
+        if(err) next(err);
+        DokioService.find({}, function(err, services) {
+            if(err) next(err);
+            console.log('service=', services);
+            console.log('doc=', doc);
+            res.render('dokio/add_dokio',
+             {  title: '호텔 추가',
+                categorys: doc,
+                a: services
+             }
+            );
+        });
+    });
+})
+
+function changetheV(a) {
+    var b = [];
+    for(var i=0; i<a.length; i++) {
+        b.push(parseInt(a[i]));
+    }
+    return b;
+}
+
+router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
+    console.log('req.body=', req.body);
+    var newDokio = new DokioModel();
+    newDokio.name = req.body.name;
+    newDokio.category = req.body.dokio_category;
+    newDokio.address = req.body.address;
+    var first = changetheV(req.body.first);
+    var last = changetheV(req.body.last);
+    var price_info = changetheV(req.body.price_info);
+    var price_data = [];
+    console.log('first.legnth=', first.length);
+    for(var i=0; i<first.length; i++) {
+        for(var j=first[i]; j<=last[i]; j++){
+            console.log('j=', j);
+            price_data.push({
+                weight: j,
+                price: price_info[i]
+            });
+        }
+        console.log('price_data=', price_data);
+    }
+    newDokio.price = price_data;
+    var img_src = [];
+    req.files.forEach(function (fileObj, index) {
+        var s3_params = {
+          Bucket: 'dokio2',
+          Key: Date.now().toString() + "_" + fileObj.originalname,
+          ACL: 'public-read',
+          ContentType: fileObj.mimetype
+        };
+
+        var s3obj = new aws.S3({ params: s3_params });
+        s3obj.upload({ Body: fileObj.buffer }).
+          on('httpUploadProgress', function (evt) { console.log('evt=', evt); }).
+          send(function (err, data) {
+            img_src.push(data.Location);
+            newDokio.img_url = img_src;
+          })
+    });
+    newDokio.petcategories = req.body.pet_category;
+    newDokio.phonenumber = req.body.phone_number;
+    newDokio.rule = req.body.rule;
+    newDokio.events = req.body.event;
+    console.log('service=', changetheV(req.body.service))
+    newDokio.services = changetheV(req.body.service);
+    var time_data = {
+        weekday: req.body.weekday,
+        weekend: req.body.weekend,
+        ectinfo: req.body.etc
+    };
+    newDokio.times = time_data;
+    console.log('newdokio=', newDokio);
+    newDokio.save(function(err, doc) {
+        if(err) console.log('err=',err);
+        res.json({
+            doc: doc
+        });
+    });
 })
 
 //도키오 검색 페이지
@@ -233,9 +318,5 @@ router.post('/:dokio_id/review/delete_complete', function(req, res, next) {
 
 
 //호텔 추가 페이지 삭제 가능
-router.post('/dokio/add_dokio', function(req, res, next) {
 
-
-
-})
 module.exports = router;

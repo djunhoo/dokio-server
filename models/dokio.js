@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var db = require('./db');
 var Petcategories = require('./petcategory').petcategorySchema;
 var Dokioservice = require('./dokioservice').dokioserviceSchema;
-var Dokiotime = require('./dokiotime');
 var Dokioreview = require('./dokioreview').dokioreviewSchema;
 
 var Schema = mongoose.Schema;
@@ -34,10 +33,14 @@ var dokioSchema = new Schema({
 	rule: String,
 	events: String,
 	services: [{
-		type: Schema.Types.ObjectId,
+		type: Number,
 		ref:'dokioservice'
 	}],
-	times: Dokiotime,
+	times: {
+		weekday: String,
+		weekend: String,
+		ectinfo: String
+	},
 	reviews: [Dokioreview],
 	like_count: {type: Number, default: 0}
 
