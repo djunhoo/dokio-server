@@ -34,10 +34,15 @@ router.get('/add_dokio', function(req, res, next) {
 
 function changetheV(a) {
     var b = [];
-    for(var i=0; i<a.length; i++) {
-        b.push(parseInt(a[i]));
+    if(a) {
+    if( Object.prototype.toString.call( a ) === '[object Array]' ) {
+            for(var i=0; i<a.length; i++) {
+                b.push(parseInt(a[i]));
+            }
+            return b;
     }
-    return b;
+    }
+
 }
 
 router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
