@@ -42,6 +42,7 @@ function changetheV(a) {
 
 router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
     console.log('req.body=', req.body);
+    var doc_id;
     var newDokio = new DokioModel();
     newDokio.name = req.body.name;
     newDokio.category = req.body.dokio_category;
@@ -76,14 +77,15 @@ router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
           on('httpUploadProgress', function (evt) { console.log('evt=', evt); }).
           send(function (err, data) {
             img_src.push(data.Location);
-            newDokio.img_url = img_src;
-          })
+             DokioModel.update({_id: doc_id}, {$push: { img_url: data.Location } }, function(err, doc){
+                console.log('img doc=', doc);
+             });
+        });
     });
     newDokio.petcategories = req.body.pet_category;
     newDokio.phonenumber = req.body.phone_number;
     newDokio.rule = req.body.rule;
     newDokio.events = req.body.event;
-    console.log('service=', changetheV(req.body.service))
     newDokio.services = changetheV(req.body.service);
     var time_data = {
         weekday: req.body.weekday,
@@ -91,13 +93,15 @@ router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
         ectinfo: req.body.etc
     };
     newDokio.times = time_data;
-    console.log('newdokio=', newDokio);
     newDokio.save(function(err, doc) {
-        if(err) console.log('err=',err);
-        res.json({
-            doc: doc
-        });
+          if(err) console.log('err=', err);
+          doc_id = doc._id;
+          res.json({
+            doc:doc
+          })
+
     });
+
 })
 
 //도키오 검색 페이지
@@ -120,7 +124,7 @@ router.get('/:dokio_id', function(req, res, next) {
         // res.json({doc: doc});
         console.log('dokio_info doc = ', doc)
             // console.log('dokio_info doc _id = ', username)
-        res.render('dokio/dokio_info', { title: '상세', doc: doc })
+        res.render('dokio/dokio_add', { title: '상세', doc: doc })
             // res.json({doc:doc})
     });
 });
