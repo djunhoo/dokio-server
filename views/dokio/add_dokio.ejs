@@ -106,7 +106,7 @@
                 </a>
             </label><br>
             <div class="col-sm-10">
-                <select name='service' id='selectpicker_service' class='form-control' data-style='btn-default'>
+                <select name='service' multiple="multiple", id='selectpicker_service' class='form-control' data-style='btn-default'>
                         <% for(var j=0; j<10; j++) { %>
                             <option value='<%= a[j]._id %>' token='<%= a[j].service_name %>'><%= a[j].service_name %></option>
                         <% } %>
@@ -178,6 +178,7 @@
                 $(this).parent().parent().remove();
         });
         $('#selectpicker').selectpicker();
+        $('#selectpicker_service').selectpicker();
         $('#add_category').click(function(e) {
             console.log('n_c=',n_c);
             if( n_c < 10) {
