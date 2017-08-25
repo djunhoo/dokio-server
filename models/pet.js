@@ -7,7 +7,7 @@ var autoIncrement = require('mongoose-auto-increment');
 autoIncrement.initialize(db);
 
 var petSchema = new Schema({
-	_id: Number,
+	//_id: Number,
 	name: String,
 	age: Number,
 	sex: {
@@ -17,7 +17,7 @@ var petSchema = new Schema({
 	},
 	weight: Number,
 	category: {
-		type: Schema.Types.ObjectId, 
+		type: Schema.Types.ObjectId,
 		ref:'petcategory'
 	},
 	pet_img: String,
@@ -26,6 +26,5 @@ var petSchema = new Schema({
 
 petSchema.plugin(autoIncrement.plugin, {model: 'pet', field: '_id', startAt: 1, incrementBy: 1});
 var petModel = db.model('pet', petSchema);
-
 
 module.exports = {petModel:petModel, petSchema: petSchema};

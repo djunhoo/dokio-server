@@ -4,26 +4,76 @@ module.exports= function (passport) {
 	var formidable = require('formidable');
 	var AWS = require('aws-sdk');
 	var router = express.Router();
-	var fs = require('fs');
-	var s3 = new AWS.S3();
+	var petModel = require('../models/pet').petModel;
 	var PetCategory = require('../models/petcategory').petcategoryModel;
 	var jwt = require('jwt-simple');
 	var configAuth = require('../config/auth');
-	var photoBucket = new AWS.S3({params: {Bucket: 'dokio2'}});
-	function uploadToS3(file, destFileName, callback) {
-		photoBucket.upload({
-			ACL: 'public-read',
-			Body: fs.createReadStream(file.path),
-			Key: Date.now().toString() + destFileName.toString(),
-			Content:  file.mimetype
-		})
-		.send(callback);
-	}
-
-
+	var multer = require('multer');
+	var multerS3 = require('multer-s3');
+	var fs = require('fs');
+	var s3 = new AWS.S3();
+	var upload = multer({
+	    storage: multerS3({
+	        s3: s3,
+	        bucket: 'dokio2',
+	        key: function (req, file, cb) {
+	            console.log(file);
+	            cb(null, Date.now().toString() + file.originalname); //use Date.now() for unique file keys
+	        }
+	    })
+	});
 
 	router.get('/', function(req, res) {
 		res.render('index', {title: '메인페이지'});
+	});
+
+	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
+		console.log('token=', req.body.token);
+		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+		console.log('decoded_email=', decoded_email);
+		User.findOne({email: decoded_email}, function(err, user) {
+			var pet = new petModel({
+				name: req.body.pet_name,
+				age: req.body.pet_age,
+				sex: req.body.pet_sex,
+				weight: req.body.pet_weight,
+				pet_img: req.file.location
+			});
+			user.pets.push(pet);
+			user.save(function(err){
+				if(err) console.log(err);
+				res.json({
+					user: user
+				});
+			});
+		})
+		// User.findOneAndUpdate({email: decoded_email},
+		// 	{$push: {
+		// 		"pets": {
+		// 			name: req.body.pet_name,
+		// 			age: req.body.pet_age,
+		// 			sex: req.body.pet_sex,
+		// 			weight: req.body.pet_weight,
+		// 			pet_img: req.file.location
+		// 		}
+		// 	}},
+		// 	{upsert: true},
+		// 	function(err, doc) {
+		// 	if(err) next(err);
+		// 	if(doc) {
+		// 		res.json({
+		// 			success_code: 1,
+		// 			result: null
+		// 		})
+		// 	} else {
+		// 		res.json({
+		// 			success_code: 0,
+		// 			message: "찾는 상용자가 없습니다.",
+		// 			result: null
+		// 		});
+
+		// 	}
+		// })
 	});
 
 	router.get('/memo/write', function(req, res, next) {
@@ -275,9 +325,7 @@ var params = {
 	ACL:'public-read',
 	Body: require('fs').createReadStream(files.petfile.path)
 };*/
-	router.post('/pet/write', function(req, res, next) {
 
-	});
 
 	router.get('/edit/:user_id', function(req, res, next) {
 		console.log('hi li');

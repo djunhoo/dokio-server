@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
 var PetModelSchema = require('./pet').petSchema;
+var PetModel = require('./pet').petModel;
 var db = require('./db');
 
 var Schema = mongoose.Schema;
@@ -8,7 +9,7 @@ var autoIncrement = require('mongoose-auto-increment');
 autoIncrement.initialize(db);
 
 var userSchema = mongoose.Schema({
-    _id              : Number,
+    //_id              : Number,
     userid           : String,
     password         : String,
     token            : String,
@@ -18,7 +19,6 @@ var userSchema = mongoose.Schema({
     myprof_img       : String,
     pets: [PetModelSchema]
 });
-
 
 // 해쉬 암호화
 userSchema.methods.generateHash = function(password) {
