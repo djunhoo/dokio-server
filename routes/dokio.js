@@ -13,7 +13,30 @@ var upload = multer({ storage: memorystorage })
 router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });
 });
+
+router.get('/:dokio_id', function(req, res, next) {
+    var dokio_id = req.params.dokio_id;
+    DokioModel.findOne({ _id: dokio_id }, '-_id -__v -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+        if(err) next(err);
+        if(dokio) {
+            res.json({
+                success_code: 1,
+                result: {
+                    dokio: dokio
+                }
+            });
+        } else {
+            res.json({
+                success_code: 0,
+                message: "찾는 정보가 없습니다.",
+                result: null
+            })
+        }
+    });
+});
+
 router.get('/filter', function(req, res, next) {
+    console.log('req.body=', req.body);
     DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
     .exec(function(err, dokio){
             if(err) next(err);
@@ -24,8 +47,6 @@ router.get('/filter', function(req, res, next) {
                 }
             });
     });
-
-
 });
 
 
@@ -136,18 +157,6 @@ router.get('/search_list', function(req, res, next) {
 });
 
 //도키오 조회 페이지 (상세 조회 - 리뷰까지)
-router.get('/:dokio_id', function(req, res, next) {
-    var dokio_id = req.params.dokio_id;
-    // var username = req.reviews._id;
-    // console.log('dokio_id = ', dokio_id)
-    DokioModel.findOne({ _id: dokio_id }, function(err, doc) {
-        // res.json({doc: doc});
-        console.log('dokio_info doc = ', doc)
-            // console.log('dokio_info doc _id = ', username)
-        res.render('dokio/dokio_add', { title: '상세', doc: doc })
-            // res.json({doc:doc})
-    });
-});
 
 
 router.get('/:dokio_id/review/write', function(req, res, next) {

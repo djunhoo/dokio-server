@@ -4,11 +4,21 @@ module.exports= function (passport) {
 	var formidable = require('formidable');
 	var AWS = require('aws-sdk');
 	var router = express.Router();
+	var fs = require('fs');
 	var s3 = new AWS.S3();
 	var PetCategory = require('../models/petcategory').petcategoryModel;
 	var jwt = require('jwt-simple');
 	var configAuth = require('../config/auth');
-
+	var photoBucket = new AWS.S3({params: {Bucket: 'dokio2'}});
+	function uploadToS3(file, destFileName, callback) {
+		photoBucket.upload({
+			ACL: 'public-read',
+			Body: fs.createReadStream(file.path),
+			Key: Date.now().toString() + destFileName.toString(),
+			Content:  file.mimetype
+		})
+		.send(callback);
+	}
 
 
 
@@ -98,9 +108,6 @@ module.exports= function (passport) {
             failureRedirect: '/users/login_failed',
             failureFlash: true
           }), function(req, res) {
-	      //successRedirect : '/users/login_success',
-	     // failureRedirect : '/users/login_failed';
-	     // failureFlash : true; // allow flash messages
           if(!req.user) {
             console.log('실패');
             res.json({
@@ -115,22 +122,6 @@ module.exports= function (passport) {
           });
           }
 	});
-
- /*    router.post('/login', function(req, res, next) {
-
-        passport.authenticate('local-login', function(err, user) {
-            if(!user) {
-                res.json({
-                    success:e
-                });
-            } else {
-               res.json({
-
-                    success:1
-               });
-            }
-        });
-    }); */
 
 	// 프로필 라우터
 
@@ -277,38 +268,15 @@ module.exports= function (passport) {
 		});
 	});
 
+/*
+var params = {
+	Bucket: 'dokio2',
+	Key: files.petfile.name,
+	ACL:'public-read',
+	Body: require('fs').createReadStream(files.petfile.path)
+};*/
 	router.post('/pet/write', function(req, res, next) {
-		var form = new formidable.IncomingForm();
-		form.parse(req, function(err, fields, files) {
-			console.log('files=', files)
-			var params = {
-				Bucket: 'dokio2',
-				Key: files.petfile.name,
-				ACL:'public-read',
-				Body: require('fs').createReadStream(files.petfile.path)
-			};
-			s3.upload(params, function(err, data) {
-				if(err) {
-					console.log('err=', err);
-				}
-				else {
-					var pet_data = {
-						name    : fields.name,
-						age     : fields.age,
-						sex		: fields.sex,
-						weight	: fields.weight,
-						//categorys :
-					};
-					console.log('form_data=', form_data);
-					User.update({ _id: req.user._id }, form_data, function(err, doc) {
-							if(err) return next(err);
-							res.locals.login = req.isAuthenticated();
-							console.log('user=', doc);
-							res.render('users/mypage', {title: "내 정보 조회", user:req.user});
-					});
-				}
-			});
-		});
+
 	});
 
 	router.get('/edit/:user_id', function(req, res, next) {
@@ -356,27 +324,6 @@ module.exports= function (passport) {
 			}
 			});
 	});
-
-	router.get('/json/:user_id', function(req, res, next) {
-		if (req.isAuthenticated())
-		{
-			user_id = req.params.user_id;
-			User.findOne({_id: user_id}, function(err, user) {
-				res.locals.login = req.isAuthenticated();
-				console.log('user=', user);
-				res.json({
-					success_code: 1,
-					message: "성공",
-					result: {
-						user: user
-					}
-				});
-			});
-		} else {
-			res.redirect('/users/login');
-		}
-	});
-
 
 
 	function isLoggedIn(req, res, next) {
