@@ -81,7 +81,7 @@ module.exports= function (passport) {
     router.get('/login_success', function(req, res, next) {
         console.log('success_user=', req.user);
         res.json({
-           
+
         });
     });
 
@@ -199,7 +199,7 @@ module.exports= function (passport) {
 					    res.json({
 					    	success_code: 1,
 					    	result: {
-					    		user: user.pet
+					    		pet: user.pet
 	                         }
 					    });
 					} else {
