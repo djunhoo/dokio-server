@@ -44,9 +44,7 @@ router.get('/filter', function(req, res, next) {
             if(err) next(err);
             res.json({
                 success_code:1,
-                result: {
-                    dokio: dokio
-                }
+                result: dokio
             });
     });
 });

@@ -26,6 +26,28 @@ module.exports= function (passport) {
 	router.get('/', function(req, res) {
 		res.render('index', {title: '메인페이지'});
 	});
+	router.get('/pet/:pet_id', function(req, res, next){
+		console.log('token=', req.body.token);
+		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+		User.find({email: decoded_email},{pets: true}, function(err, user) {
+			if(err) next(err);
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: {
+						pets: user
+					}
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "사용자를 찾을수 없습니다.",
+					result: null,
+				});
+			}
+
+		});
+	});
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
 		console.log('token=', req.body.token);
@@ -47,33 +69,6 @@ module.exports= function (passport) {
 				});
 			});
 		})
-		// User.findOneAndUpdate({email: decoded_email},
-		// 	{$push: {
-		// 		"pets": {
-		// 			name: req.body.pet_name,
-		// 			age: req.body.pet_age,
-		// 			sex: req.body.pet_sex,
-		// 			weight: req.body.pet_weight,
-		// 			pet_img: req.file.location
-		// 		}
-		// 	}},
-		// 	{upsert: true},
-		// 	function(err, doc) {
-		// 	if(err) next(err);
-		// 	if(doc) {
-		// 		res.json({
-		// 			success_code: 1,
-		// 			result: null
-		// 		})
-		// 	} else {
-		// 		res.json({
-		// 			success_code: 0,
-		// 			message: "찾는 상용자가 없습니다.",
-		// 			result: null
-		// 		});
-
-		// 	}
-		// })
 	});
 
 	router.get('/memo/write', function(req, res, next) {
