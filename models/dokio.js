@@ -34,7 +34,7 @@ var dokioSchema = new Schema({
 	events: String,
 	services: [{
 		type: Number,
-		ref:'dokioservice'
+		ref:'dokioservices'
 	}],
 	times: {
 		weekday: String,

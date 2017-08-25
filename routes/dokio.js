@@ -13,6 +13,21 @@ var upload = multer({ storage: memorystorage })
 router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });
 });
+router.get('/filter', function(req, res, next) {
+    DokioModel.find({}, '-_id -__v -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    .exec(function(err, dokio){
+            if(err) next(err);
+            res.json({
+                success_code:1,
+                result: {
+                    dokio: dokio
+                }
+            });
+    });
+
+
+});
+
 
 router.get('/add_dokio', function(req, res, next) {
     var service_category = null;
