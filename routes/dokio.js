@@ -37,6 +37,8 @@ router.get('/', function(req, res, next) {
 
 router.get('/filter', function(req, res, next) {
     console.log('req.body=', req.body);
+    console.log('req.params=', req.params);
+    console.log('req=',req.query);
     DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
     .exec(function(err, dokio){
             if(err) next(err);
