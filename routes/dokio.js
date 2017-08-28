@@ -79,7 +79,7 @@ router.get('/sort/distance', function(req, res, next) {
     var mylon = 126.958563;
 
     var GeoPoint = require('geopoint');
-    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
     .exec(function(err, dokios){
         if(err) next(err);
         var arr = [];
@@ -135,7 +135,7 @@ router.get('/filter', function(req, res, next) {
     console.log('req.body=', req.body);
     console.log('req.params=', req.params);
     console.log('req=',req.query);
-    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
     .exec(function(err, dokio){
             if(err) next(err);
             res.json({
@@ -148,7 +148,7 @@ router.get('/filter', function(req, res, next) {
 
 
 router.get('/sort/like', function(req, res, next) {
-    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
         if(err) next(err);
         if(dokio) {
             res.json({
@@ -166,7 +166,7 @@ router.get('/sort/like', function(req, res, next) {
 })
 
 router.get('/sort/price', function(req, res, next) {
-    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
         if(err) next(err);
         if(dokio) {
             res.json({
@@ -204,7 +204,7 @@ router.get('/add_dokio', function(req, res, next) {
 
 router.get('/:dokio_id', function(req, res, next) {
     var dokio_id = req.params.dokio_id;
-    DokioModel.findOne({ _id: dokio_id }, '-_id -__v -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+    DokioModel.findOne({ _id: dokio_id }, '-_id -__v -wedo -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
         if(err) next(err);
         if(dokio) {
             res.json({
