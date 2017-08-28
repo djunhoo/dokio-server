@@ -142,6 +142,18 @@ router.get('/category', function(req, res, next) {
     });
 });
 
+router.get('/name', function(req, res, next) {
+    console.log('req.params=', req.query.name);
+    DokioModel.find({name: {$in: req.query.name}},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    .exec(function(err, dokio){
+            if(err) next(err);
+            res.json({
+                success_code:1,
+                result: dokio
+            });
+    });
+});
+
 
 router.get('/sort/like', function(req, res, next) {
     DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
