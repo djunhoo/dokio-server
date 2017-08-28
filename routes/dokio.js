@@ -24,6 +24,53 @@ function dynamicSort(property) {
     }
 }
 
+router.post('/update/wedo', function(req, res, next) {
+    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    .exec(function(err, dokios){
+        if(err) next(err);
+        var arr = [];
+        async.eachSeries(dokios, function(dokio, callback) {
+            var x, y;
+            var client_id = 'BE0l52f9aEfCBb1pX_kH';
+            var client_secret = '1P2WHA7qjT';
+            var api_url = 'https://openapi.naver.com/v1/map/geocode?query=' + encodeURI(dokio.address); // json
+            var options = {
+                url: api_url,
+                headers: {'X-Naver-Client-Id':client_id, 'X-Naver-Client-Secret': client_secret}
+            };
+            request.get(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var obj = eval(("("+body+")"));
+                    // obj.result.items[0].point.y
+                    // obj.result.items[0].point.x
+                    x = obj.result.items[0].point.y;
+                    y = obj.result.items[0].point.x;
+                } else {
+                    console.log('error = ' + response.statusCode);
+                }
+            var wedo_data = {
+                lat: x,
+                lon: y
+            }
+            DokioModel.update(
+                {_id: dokio._id},
+                {wedo: wedo_data},
+                function(err, doc) {
+
+                }
+            );
+            callback();
+            });
+        }, function(err) {
+           // console.log('arr=', arr);
+            res.json({
+                success_code: 1,
+                result: null
+            });
+        });
+    });
+});
+
 router.get('/sort/distance', function(req, res, next) {
     console.log('req.body=', req.body);
     console.log('req.params=', req.params);
@@ -75,7 +122,6 @@ router.get('/sort/distance', function(req, res, next) {
             });
         });
     });
-
 });
 
 

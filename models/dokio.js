@@ -19,6 +19,10 @@ var dokioSchema = new Schema({
         default: '호텔'
 	},
 	address: String,
+	wedo: {
+		lat: Number,
+		lon: Number
+	},
 	content: String,
 	price: [{
 		weight: Number,
