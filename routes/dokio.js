@@ -14,26 +14,6 @@ router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });
 });
 
-router.get('/:dokio_id', function(req, res, next) {
-    var dokio_id = req.params.dokio_id;
-    DokioModel.findOne({ _id: dokio_id }, '-_id -__v -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
-        if(err) next(err);
-        if(dokio) {
-            res.json({
-                success_code: 1,
-                result: {
-                    dokio: dokio
-                }
-            });
-        } else {
-            res.json({
-                success_code: 0,
-                message: "찾는 정보가 없습니다.",
-                result: null
-            })
-        }
-    });
-});
 
 router.get('/filter', function(req, res, next) {
     console.log('req.body=', req.body);
@@ -67,6 +47,28 @@ router.get('/add_dokio', function(req, res, next) {
         });
     });
 })
+
+router.get('/:dokio_id', function(req, res, next) {
+    var dokio_id = req.params.dokio_id;
+    DokioModel.findOne({ _id: dokio_id }, '-_id -__v -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+        if(err) next(err);
+        if(dokio) {
+            res.json({
+                success_code: 1,
+                result: {
+                    dokio: dokio
+                }
+            });
+        } else {
+            res.json({
+                success_code: 0,
+                message: "찾는 정보가 없습니다.",
+                result: null
+            })
+        }
+    });
+});
+
 
 function changetheV(a) {
     var b = [];
