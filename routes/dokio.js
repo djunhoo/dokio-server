@@ -58,10 +58,10 @@ router.get('/sort/distance', function(req, res, next) {
                 }
             arr.push({
                 _id: dokio._id,
-                name: dokio.name,
+                phonenumber: dokio.phonenumber,
                 address: dokio.address,
-                img_url: dokio.img_url[0],
-                distance: distance
+                name: dokio.name,
+                img_url: dokio.img_url,
             })
             callback();
             });
@@ -102,7 +102,7 @@ router.get('/filter', function(req, res, next) {
 
 
 router.get('/sort/like', function(req, res, next) {
-    DokioModel.find({}, '-_id -__v -price._id').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
         if(err) next(err);
         if(dokio) {
             res.json({
@@ -120,7 +120,7 @@ router.get('/sort/like', function(req, res, next) {
 })
 
 router.get('/sort/price', function(req, res, next) {
-    DokioModel.find({},'-_id -__v -price._id').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
         if(err) next(err);
         if(dokio) {
             res.json({
