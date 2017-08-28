@@ -79,44 +79,29 @@ router.get('/sort/distance', function(req, res, next) {
     var mylon = 126.958563;
 
     var GeoPoint = require('geopoint');
-    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
     .exec(function(err, dokios){
         if(err) next(err);
         var arr = [];
         async.eachSeries(dokios, function(dokio, callback) {
             var distance;
             console.log('먼저2');
-            var client_id = 'BE0l52f9aEfCBb1pX_kH';
-            var client_secret = '1P2WHA7qjT';
-            var api_url = 'https://openapi.naver.com/v1/map/geocode?query=' + encodeURI(dokio.address); // json
-            var options = {
-                url: api_url,
-                headers: {'X-Naver-Client-Id':client_id, 'X-Naver-Client-Secret': client_secret}
-            };
-            request.get(options, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    var obj = eval(("("+body+")"));
-                    point1 = new GeoPoint(mylat, mylon);
-                    point2 = new GeoPoint(obj.result.items[0].point.y, obj.result.items[0].point.x);
-                    distance = point1.distanceTo(point2, true)//output in kilometers
-                    console.log('disdis=', distance);
-                } else {
-                    console.log('error = ' + response.statusCode);
-                }
+            point1 = new GeoPoint(mylat, mylon);
+            console.log('dokio.wedo=', dokio);
+            point2 = new GeoPoint(dokio.wedo.lat, dokio.wedo.lon);
+            distance = point1.distanceTo(point2, true);
             arr.push({
                 _id: dokio._id,
                 phonenumber: dokio.phonenumber,
                 address: dokio.address,
                 name: dokio.name,
                 img_url: dokio.img_url,
+                distance: distance
             })
             callback();
-            });
             console.log('infunction arr=', arr);
         }, function(err) {
-            console.log('먼저');
            // console.log('arr=', arr);
-
             res.json({
                 result: arr.sort(dynamicSort("distance"))
             });
@@ -127,7 +112,7 @@ router.get('/sort/distance', function(req, res, next) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('dokio/dokio', { title: 'Express' });
+    res.render('dokio/dokio', { title: 'Express' });z
 });
 
 
