@@ -25,6 +25,9 @@ function dynamicSort(property) {
 }
 
 router.get('/sort/distance', function(req, res, next) {
+    console.log('req.body=', req.body);
+    console.log('req.params=', req.params);
+    console.log('req=',req.query);
     var mylat = 37.465634;
     var mylon = 126.958563;
 
