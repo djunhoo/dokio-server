@@ -130,6 +130,17 @@ router.get('/filter', function(req, res, next) {
     });
 });
 
+router.get('/category', function(req, res, next) {
+    console.log('req.params=', req.query.category);
+    DokioModel.find({category: req.query.category},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    .exec(function(err, dokio){
+            if(err) next(err);
+            res.json({
+                success_code:1,
+                result: dokio
+            });
+    });
+});
 
 
 router.get('/sort/like', function(req, res, next) {
