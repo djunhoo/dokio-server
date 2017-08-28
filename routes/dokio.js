@@ -55,9 +55,7 @@ router.get('/:dokio_id', function(req, res, next) {
         if(dokio) {
             res.json({
                 success_code: 1,
-                result: {
-                    dokio: dokio
-                }
+                result: dokio
             });
         } else {
             res.json({
