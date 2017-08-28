@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var DokioModel = require('../models/dokio');
+var DokioModel = require('../models/dokio').dokioModel;
 var DokioreviewModel = require('../models/dokioreview')
 var DokioService = require('../models/dokioservice').dokioserviceModel;
 var PetCategory = require('../models/petcategory').petcategoryModel;

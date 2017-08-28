@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
 var PetModelSchema = require('./pet').petSchema;
 var PetModel = require('./pet').petModel;
+var DokioModelSchema = require('./dokio').dokioSchema;
 var db = require('./db');
 
 var Schema = mongoose.Schema;

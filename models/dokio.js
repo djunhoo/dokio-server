@@ -50,4 +50,4 @@ dokioSchema.plugin(autoIncrement.plugin, {model: 'dokio', field: '_id', startAt:
 
 var dokioModel = db.model('dokio', dokioSchema);
 
-module.exports = dokioModel;
+module.exports = {dokioModel:dokioModel, dokioSchema:dokioSchema};
