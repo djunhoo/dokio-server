@@ -18,7 +18,11 @@ var userSchema = mongoose.Schema({
     name             : String,
     phone_number     : String,
     myprof_img       : String,
-    pets: [PetModelSchema]
+    pets: [PetModelSchema],
+    favorites: [{
+        type: Number,
+        ref:'dokio'
+    }]
 });
 
 // 해쉬 암호화

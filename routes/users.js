@@ -368,6 +368,91 @@ var params = {
 			});
 	});
 
+	router.post('/dokio/favorite', function(req, res, next) {
+
+		console.log('token=', req.query.token);
+
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		User.update({email: decoded_email}, {$addToSet: {favorites: req.query.dokio_id}}, function(err, user) {
+			if(err) next(err);
+			console.log('user = ', user)
+
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: {
+						user: user
+					}
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "즐겨찾기 추가 실패",
+					result: null,
+				});
+			}
+
+		});
+
+	});
+
+	router.get('/dokio/favorite_list', function(req, res, next) {
+
+		console.log('token=', req.query);
+		console.log('token=', req.body);
+		// console.log('token=', req.body);
+
+
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		User.find({email:decoded_email}, '-password').populate('favorites').exec(function(err, user) {
+			if(err) next(err);
+			console.log('user = ', user)
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: {
+						user: user
+					}
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "즐겨찾기를 찾을수 없습니다.",
+					result: null,
+				});
+			}
+
+		});
+	});
+
+	router.post('/dokio/favorite_delete', function(req, res, next) {
+
+		console.log('token=', req.query.token);
+
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		User.update({email: decoded_email}, {$pull: {favorites: req.query.dokio_id}}, function(err, user) {
+			if(err) next(err);
+			console.log('user = ', user)
+
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: {
+						user: user
+					}
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "즐겨찾기 삭제 실패",
+					result: null,
+				});
+			}
+
+		});
+
+	});
+
 
 	function isLoggedIn(req, res, next) {
 
