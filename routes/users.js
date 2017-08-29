@@ -50,16 +50,21 @@ module.exports= function (passport) {
 	});
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
-		console.log('token=', req.body.token);
-		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+		console.log('token=', req.query.token);
+		console.log('file=', req.file);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
+		var location;
+		if(req.file) {
+			location = req.file.location;
+		}
 		User.findOne({email: decoded_email}, function(err, user) {
 			var pet = new petModel({
-				name: req.body.pet_name,
-				age: req.body.pet_age,
-				sex: req.body.pet_sex,
-				weight: req.body.pet_weight,
-				pet_img: req.file.location
+				name: req.query.pet_name,
+				age: req.query.pet_age,
+				sex: req.query.pet_sex,
+				weight: req.query.pet_weight,
+				pet_img: location
 			});
 			user.pets.push(pet);
 			user.save(function(err){
@@ -70,6 +75,32 @@ module.exports= function (passport) {
 			});
 		})
 	});
+
+	router.post('/pet/delete', function(req, res, next) {
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('decoded_email=', decoded_email);
+		User.update({email: decoded_email}, {$pull: {pets: {_id: req.query.pet_id}}}, function(err, user) {
+				if(user) {
+					res.json({
+						success_code: 1,
+						result: {
+							user: user
+						}
+					});
+				} else {
+					res.json({
+						success_code: 0,
+						message: "반려견 삭제 실패",
+						result: null,
+					});
+				}
+
+			});
+
+	});
+
+
 
 	router.get('/memo/write', function(req, res, next) {
 		res.locals.login = req.isAuthenticated();
