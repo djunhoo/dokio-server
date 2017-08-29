@@ -71,45 +71,6 @@ router.post('/update/wedo', function(req, res, next) {
     });
 });
 
-router.get('/sort/distance', function(req, res, next) {
-    console.log('req.body=', req.body);
-    console.log('req.params=', req.params);
-    console.log('req=',req.query);
-    var mylat = 37.465634;
-    var mylon = 126.958563;
-
-    var GeoPoint = require('geopoint');
-    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
-    .exec(function(err, dokios){
-        if(err) next(err);
-        var arr = [];
-        async.eachSeries(dokios, function(dokio, callback) {
-            var distance;
-            console.log('먼저2');
-            point1 = new GeoPoint(mylat, mylon);
-            console.log('dokio.wedo=', dokio);
-            point2 = new GeoPoint(dokio.wedo.lat, dokio.wedo.lon);
-            distance = point1.distanceTo(point2, true);
-            arr.push({
-                _id: dokio._id,
-                phonenumber: dokio.phonenumber,
-                address: dokio.address,
-                name: dokio.name,
-                img_url: dokio.img_url,
-                distance: distance
-            })
-            callback();
-            console.log('infunction arr=', arr);
-        }, function(err) {
-           // console.log('arr=', arr);
-            res.json({
-                result: arr.sort(dynamicSort("distance"))
-            });
-        });
-    });
-});
-
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });z
@@ -117,17 +78,90 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/filter', function(req, res, next) {
-    console.log('req.body=', req.body);
-    console.log('req.params=', req.params);
     console.log('req=',req.query);
-    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
-    .exec(function(err, dokio){
-            if(err) next(err);
-            res.json({
-                success_code:1,
-                result: dokio
+    sort = req.query.sort;
+    console.log(sort);
+    if(!sort) {
+        DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+        .exec(function(err, dokio){
+                if(err) next(err);
+                res.json({
+                    success_code:1,
+                    result: dokio
+                });
+        });
+    } else {
+        if(sort == "price")
+        {
+            DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+                if(err) next(err);
+                if(dokio) {
+                    res.json({
+                        success_code: 1,
+                        result: dokio
+                    });
+                } else {
+                    res.json({
+                        success_code: 0,
+                        message: "찾는 정보가 없습니다.",
+                        result: null
+                    })
+                }
             });
-    });
+        }
+        else if(sort == "distance"){
+            var mylat = 37.465634;
+            var mylon = 126.958563;
+
+            var GeoPoint = require('geopoint');
+            DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+            .exec(function(err, dokios){
+                if(err) next(err);
+                var arr = [];
+                async.eachSeries(dokios, function(dokio, callback) {
+                    var distance;
+                    console.log('먼저2');
+                    point1 = new GeoPoint(mylat, mylon);
+                    console.log('dokio.wedo=', dokio);
+                    point2 = new GeoPoint(dokio.wedo.lat, dokio.wedo.lon);
+                    distance = point1.distanceTo(point2, true);
+                    arr.push({
+                        _id: dokio._id,
+                        phonenumber: dokio.phonenumber,
+                        address: dokio.address,
+                        name: dokio.name,
+                        img_url: dokio.img_url,
+                        distance: distance
+                    })
+                    callback();
+                    console.log('infunction arr=', arr);
+                }, function(err) {
+                   // console.log('arr=', arr);
+                    res.json({
+                        result: arr.sort(dynamicSort("distance"))
+                    });
+                });
+            });
+        }
+        else if(sort == "like"){
+            DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+                    if(err) next(err);
+                    if(dokio) {
+                        res.json({
+                            success_code: 1,
+                            result: dokio
+                        });
+                    } else {
+                        res.json({
+                            success_code: 0,
+                            message: "찾는 정보가 없습니다.",
+                            result: null
+                        })
+                    }
+                });
+        }
+
+    }
 });
 
 router.get('/category', function(req, res, next) {
@@ -144,7 +178,9 @@ router.get('/category', function(req, res, next) {
 
 router.get('/name', function(req, res, next) {
     console.log('req.params=', req.query.name);
-    DokioModel.find({name: {$in: req.query.name}},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    var name = req.query.name;
+    var search = new RegExp(name);
+    DokioModel.find({ name: { $in: search } },'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
     .exec(function(err, dokio){
             if(err) next(err);
             res.json({
@@ -153,44 +189,6 @@ router.get('/name', function(req, res, next) {
             });
     });
 });
-
-
-router.get('/sort/like', function(req, res, next) {
-    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
-        if(err) next(err);
-        if(dokio) {
-            res.json({
-                success_code: 1,
-                result: dokio
-            });
-        } else {
-            res.json({
-                success_code: 0,
-                message: "찾는 정보가 없습니다.",
-                result: null
-            })
-        }
-    });
-})
-
-router.get('/sort/price', function(req, res, next) {
-    DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
-        if(err) next(err);
-        if(dokio) {
-            res.json({
-                success_code: 1,
-                result: dokio
-            });
-        } else {
-            res.json({
-                success_code: 0,
-                message: "찾는 정보가 없습니다.",
-                result: null
-            })
-        }
-    });
-})
-
 
 router.get('/add_dokio', function(req, res, next) {
     var service_category = null;
