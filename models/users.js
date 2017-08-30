@@ -3,6 +3,8 @@ var bcrypt   = require('bcrypt-nodejs');
 var PetModelSchema = require('./pet').petSchema;
 var PetModel = require('./pet').petModel;
 var DokioModelSchema = require('./dokio').dokioSchema;
+var MemoModelSchema = require('./memo').memoSchema;
+var MemoModel = require('./memo').memoModel;
 var db = require('./db');
 
 var Schema = mongoose.Schema;
@@ -22,7 +24,8 @@ var userSchema = mongoose.Schema({
     favorites: [{
         type: Number,
         ref:'dokio'
-    }]
+    }],
+    memos: [MemoModelSchema]
 });
 
 // 해쉬 암호화

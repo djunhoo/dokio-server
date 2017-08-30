@@ -6,12 +6,14 @@ module.exports= function (passport) {
 	var router = express.Router();
 	var petModel = require('../models/pet').petModel;
 	var PetCategory = require('../models/petcategory').petcategoryModel;
+	var memoModel = require('../models/memo').memoModel;
 	var jwt = require('jwt-simple');
 	var configAuth = require('../config/auth');
 	var multer = require('multer');
 	var multerS3 = require('multer-s3');
 	var fs = require('fs');
 	var s3 = new AWS.S3();
+	var moment = require('moment-timezone');
 	var upload = multer({
 	    storage: multerS3({
 	        s3: s3,
@@ -22,6 +24,18 @@ module.exports= function (passport) {
 	        }
 	    })
 	});
+
+	function regDateTime(){
+	    // lang:ko를 등록한다. 한번 지정하면 자동적으로 사용된다.
+	    moment.locale('ko', {
+	        weekdays: ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+	        weekdaysShort: ["일","월","화","수","목","금","토"],
+	    });
+
+	    var m = moment().tz('Asia/Seoul');
+	    var output = m.format("YYYY년MM월DD일 dddd HH:mm:ss ");
+	    return output;
+	}
 
 	router.get('/', function(req, res) {
 		res.render('index', {title: '메인페이지'});
@@ -100,29 +114,112 @@ module.exports= function (passport) {
 
 	});
 
+//pet update
+	router.post('/pet/update', upload.single('pet_file'), function(req, res, next) {
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('decoded_email=', decoded_email);
+		var location;
+		if(req.file) {
+			location = req.file.location;
+		}
+		var name = req.query.pet_name;
+		var age = req.query.pet_age;
+		var sex = req.query.pet_sex;
+		var weight = req.query.pet_weight;
 
 
-	router.get('/memo/write', function(req, res, next) {
-		res.locals.login = req.isAuthenticated();
-		console.log('req.user=', req.user);
-		res.render('users/memowrite', {title: '메모 작성', user: req.user });
+		User.update({email: decoded_email, "pets._id": req.query.pet_id}, {$set:{"pets.$.name": name, "pets.$.age": age, "pets.$.sex": sex, "pets.$.weight": weight, "pets.$.pet_img":location}}, function(err, user) {
+
+				if(user) {
+					res.json({
+						success_code: 1,
+						result: {
+							user: user
+						}
+					});
+				} else {
+					res.json({
+						success_code: 0,
+						message: "반려견 삭제 실패",
+						result: null,
+					});
+				}
+				// });
+			});
+
 	});
 
+
 	router.post('/memo/write', function(req, res, next) {
-		user_id = req.body.user_id;
-		var content = req.body.content;
-		var memoObj = {
-			content: content,
-			regdate: Date.now()
-		};
-		User.findByIdAndUpdate({_id:user_id}, {$push: {"memos": memoObj}}, {safe: true, upsert: true, new: true}, function(err, doc) {
-				if(err) return next(err);
-				res.locals.login = req.isAuthenticated();
-				console.log('user=', doc);
-				res.render('users/memo', {title: "메모 조회", user:req.user});
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('decoded_email=', decoded_email);
+
+		User.findOne({email: decoded_email}, function(err, user) {
+				var memo = new memoModel({
+					content: req.query.memo_content,
+					date: regDateTime()
+				});
+				user.memos.push(memo);
+				user.save(function(err){
+					if(err) console.log(err);
+					res.json({
+						user: user
+					});
+				});
 		});
 	});
 
+	router.post('/memo/delete', function(req, res, next) {
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('decoded_email=', decoded_email);
+		User.update({email: decoded_email}, {$pull: {memos: {_id: req.query.memo_id}}}, function(err, user) {
+				if(user) {
+					res.json({
+						success_code: 1,
+						result: {
+							user: user
+						}
+					});
+				} else {
+					res.json({
+						success_code: 0,
+						message: "메모 삭제 실패",
+						result: null,
+					});
+				}
+
+			});
+
+	});
+
+	router.post('/memo/update', function(req, res, next) {
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('decoded_email=', decoded_email);
+
+		var content = req.query.memo_content;
+
+		User.update({email: decoded_email, "memos._id": req.query.memo_id}, {$set:{"memos.$.content": content}}, function(err, user) {
+
+				if(user) {
+					res.json({
+						success_code: 1,
+						result: {
+							user: user
+						}
+					});
+				} else {
+					res.json({
+						success_code: 0,
+						message: "메모 삭제 실패",
+						result: null,
+					});
+				}
+			});
+	});
 
 	// 카카오 인증
 	router.get('/auth/kakao', passport.authenticate('kakao', function(req, res) {
@@ -411,9 +508,7 @@ var params = {
 			if(user) {
 				res.json({
 					success_code: 1,
-					result: {
-						user: user
-					}
+					result: null
 				});
 			} else {
 				res.json({
@@ -435,15 +530,14 @@ var params = {
 
 
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
-		User.find({email:decoded_email}, '-password').populate('favorites').exec(function(err, user) {
+		User.find({email:decoded_email}, '-password').populate('favorites', '-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').exec(function(err, user) {
 			if(err) next(err);
 			console.log('user = ', user)
 			if(user) {
 				res.json({
 					success_code: 1,
-					result: {
-						user: user
-					}
+					result: user
+
 				});
 			} else {
 				res.json({
@@ -468,9 +562,7 @@ var params = {
 			if(user) {
 				res.json({
 					success_code: 1,
-					result: {
-						user: user
-					}
+					result: null
 				});
 			} else {
 				res.json({
