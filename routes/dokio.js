@@ -136,6 +136,7 @@ router.get('/filter', function(req, res, next) {
                 }, function(err) {
                    // console.log('arr=', arr);
                     res.json({
+                        success_code: 1,
                         result: arr.sort(dynamicSort("distance"))
                     });
                 });
