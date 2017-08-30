@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var DokioModel = require('../models/dokio').dokioModel;
-var DokioreviewModel = require('../models/dokioreview')
+var DokioreviewModel = require('../models/dokioreview').dokioreviewModel;
 var DokioService = require('../models/dokioservice').dokioserviceModel;
 var PetCategory = require('../models/petcategory').petcategoryModel;
 var aws = require('aws-sdk');
@@ -110,10 +110,17 @@ router.get('/filter', function(req, res, next) {
             });
         }
         else if(sort == "distance"){
-            var mylat = 37.465634;
-            var mylon = 126.958563;
+            var mylat;
+            var mylon;
             console.log('req.lat=', req.query.lat);
             console.log('req.lon=', req.query.lon);
+            if(req.query.lat) {
+                mylat = req.query.lat;
+                mylon = req.query.lon;
+            } else {
+                mylat = 37.465634;
+                mylon = 126.958563;
+            }
             var GeoPoint = require('geopoint');
             DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
             .exec(function(err, dokios){
@@ -165,13 +172,44 @@ router.get('/filter', function(req, res, next) {
 
 router.get('/category', function(req, res, next) {
     console.log('req.params=', req.query.category);
+    var mylat;
+    var mylon;
+    console.log('req.lat=', req.query.lat);
+    console.log('req.lon=', req.query.lon);
+    if(req.query.lat) {
+        mylat = req.query.lat;
+        mylon = req.query.lon;
+    } else {
+        mylat = 37.465634;
+        mylon = 126.958563;
+    }
     DokioModel.find({category: req.query.category},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
-    .exec(function(err, dokio){
-            if(err) next(err);
-            res.json({
-                success_code:1,
-                result: dokio
-            });
+                .exec(function(err, dokios){
+                    if(err) next(err);
+                    var arr = [];
+                    async.eachSeries(dokios, function(dokio, callback) {
+                        var distance;
+                        point1 = new GeoPoint(mylat, mylon);
+                        point2 = new GeoPoint(dokio.wedo.lat, dokio.wedo.lon);
+                        distance = point1.distanceTo(point2, true);
+                        if( distance < 10 ) {
+                            arr.push({
+                                _id: dokio._id,
+                                phonenumber: dokio.phonenumber,
+                                address: dokio.address,
+                                name: dokio.name,
+                                img_url: dokio.img_url,
+                                distance: distance
+                            })
+                        }
+                        callback();
+                    }, function(err) {
+                       // console.log('arr=', arr);
+                        res.json({
+                            success_code: 1,
+                            result: arr.sort(dynamicSort("distance"))
+                        });
+                    });
     });
 });
 
@@ -301,8 +339,15 @@ router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
           })
 
     });
-
 })
 
+router.post('/:dokio_id/review/write', function(req, res, next){
+    console.log('dokio_id=', req.params.dokio_id);
+    console.log('token=', req.query.token);
+
+    DokioModel.find({}, function(err, docs) {
+
+    });
+});
 
 module.exports = router;
