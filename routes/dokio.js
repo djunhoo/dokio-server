@@ -11,7 +11,7 @@ var memorystorage = multer.memoryStorage();
 var upload = multer({ storage: memorystorage });
 var request = require('request');
 var async = require("async");
-
+var GeoPoint = require('geopoint');
 function dynamicSort(property) {
     var sortOrder = 1;
     if(property[0] === "-") {
@@ -121,7 +121,6 @@ router.get('/filter', function(req, res, next) {
                 mylat = 37.465634;
                 mylon = 126.958563;
             }
-            var GeoPoint = require('geopoint');
             DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
             .exec(function(err, dokios){
                 if(err) next(err);
