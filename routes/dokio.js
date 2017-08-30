@@ -12,6 +12,9 @@ var memorystorage = multer.memoryStorage();
 var upload = multer({ storage: memorystorage });
 var request = require('request');
 var async = require("async");
+var jwt = require('jwt-simple');
+var configAuth = require('../config/auth');
+var moment = require('moment-timezone');
 
 function regDateTime(){
     // lang:ko를 등록한다. 한번 지정하면 자동적으로 사용된다.
@@ -36,54 +39,6 @@ function dynamicSort(property) {
         return result * sortOrder;
     }
 }
-
-router.post('/update/wedo', function(req, res, next) {
-    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
-    .exec(function(err, dokios){
-        if(err) next(err);
-        var arr = [];
-        async.eachSeries(dokios, function(dokio, callback) {
-            var x, y;
-            var client_id = 'BE0l52f9aEfCBb1pX_kH';
-            var client_secret = '1P2WHA7qjT';
-            var api_url = 'https://openapi.naver.com/v1/map/geocode?query=' + encodeURI(dokio.address); // json
-            var options = {
-                url: api_url,
-                headers: {'X-Naver-Client-Id':client_id, 'X-Naver-Client-Secret': client_secret}
-            };
-            request.get(options, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    var obj = eval(("("+body+")"));
-                    // obj.result.items[0].point.y
-                    // obj.result.items[0].point.x
-                    x = obj.result.items[0].point.y;
-                    y = obj.result.items[0].point.x;
-                } else {
-                    console.log('error = ' + response.statusCode);
-                }
-            var wedo_data = {
-                lat: x,
-                lon: y
-            }
-            DokioModel.update(
-                {_id: dokio._id},
-                {wedo: wedo_data},
-                function(err, doc) {
-
-                }
-            );
-            callback();
-            });
-        }, function(err) {
-           // console.log('arr=', arr);
-            res.json({
-                success_code: 1,
-                result: null
-            });
-        });
-    });
-});
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });
@@ -181,6 +136,54 @@ router.get('/filter', function(req, res, next) {
         }
 
     }
+});
+
+
+router.post('/update/wedo', function(req, res, next) {
+    DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+    .exec(function(err, dokios){
+        if(err) next(err);
+        var arr = [];
+        async.eachSeries(dokios, function(dokio, callback) {
+            var x, y;
+            var client_id = 'BE0l52f9aEfCBb1pX_kH';
+            var client_secret = '1P2WHA7qjT';
+            var api_url = 'https://openapi.naver.com/v1/map/geocode?query=' + encodeURI(dokio.address); // json
+            var options = {
+                url: api_url,
+                headers: {'X-Naver-Client-Id':client_id, 'X-Naver-Client-Secret': client_secret}
+            };
+            request.get(options, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var obj = eval(("("+body+")"));
+                    // obj.result.items[0].point.y
+                    // obj.result.items[0].point.x
+                    x = obj.result.items[0].point.y;
+                    y = obj.result.items[0].point.x;
+                } else {
+                    console.log('error = ' + response.statusCode);
+                }
+            var wedo_data = {
+                lat: x,
+                lon: y
+            }
+            DokioModel.update(
+                {_id: dokio._id},
+                {wedo: wedo_data},
+                function(err, doc) {
+
+                }
+            );
+            callback();
+            });
+        }, function(err) {
+           // console.log('arr=', arr);
+            res.json({
+                success_code: 1,
+                result: null
+            });
+        });
+    });
 });
 
 router.get('/category', function(req, res, next) {
@@ -360,7 +363,7 @@ router.post('/:dokio_id/review/write', function(req, res, next){
     console.log('dokio_id=', req.params.dokio_id);
     var dokio_id = req.params.dokio_id;
     console.log('token=', req.query.token);
-    var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+    var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 
     DokioModel.findOne({_id: req.params.dokio_id}, function(err, dokio) {
         User.findOne({email: decoded_email}, function(err, user) {
