@@ -15,6 +15,20 @@ var async = require("async");
 var jwt = require('jwt-simple');
 var configAuth = require('../config/auth');
 var moment = require('moment-timezone');
+var multer = require('multer');
+var multerS3 = require('multer-s3');
+var fs = require('fs');
+var s3 = new aws.S3();
+var upload2 = multer({
+        storage: multerS3({
+            s3: s3,
+            bucket: 'dokio2',
+            key: function (req, file, cb) {
+                console.log(file);
+                cb(null, Date.now().toString() + file.originalname); //use Date.now() for unique file keys
+            }
+        })
+    });
 
 function regDateTime(){
     // lang:ko를 등록한다. 한번 지정하면 자동적으로 사용된다.
@@ -359,25 +373,31 @@ router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
     });
 })
 
-router.post('/:dokio_id/review/write', function(req, res, next){
+router.post('/:dokio_id/review/write', upload2.single('review_file'), function(req, res, next){
     console.log('dokio_id=', req.params.dokio_id);
     var dokio_id = req.params.dokio_id;
-    console.log('token=', req.query.token);
-    var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+    console.log('token=', req.body.token);
+    var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+    var location;
+    if(req.file) {
+        location = req.file.location;
+    }
 
     DokioModel.findOne({_id: req.params.dokio_id}, function(err, dokio) {
         User.findOne({email: decoded_email}, function(err, user) {
             var review = new DokioreviewModel({
                 user_id: user._id,
                 dokio_id: dokio._id,
-                content: req.query.content,
-                regdate: regDateTime()
+                content: req.body.content,
+                regdate: regDateTime(),
+                review_img: location
             });
             dokio.reviews.push(review);
             dokio.save(function(err) {
                 if(err) console.log(err);
                 res.json({
-                    result: dokio
+                    success_code: 1,
+                    result: null
                 });
             })
         });
