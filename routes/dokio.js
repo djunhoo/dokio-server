@@ -177,8 +177,8 @@ router.get('/category', function(req, res, next) {
     console.log('req.lat=', req.query.lat);
     console.log('req.lon=', req.query.lon);
     if(req.query.lat) {
-        mylat = req.query.lat;
-        mylon = req.query.lon;
+        mylat = parseFloat(req.query.lat);
+        mylon = parseFloat(req.query.lon);
     } else {
         mylat = 37.465634;
         mylon = 126.958563;
