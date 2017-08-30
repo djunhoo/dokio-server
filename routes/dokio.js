@@ -4,6 +4,7 @@ var DokioModel = require('../models/dokio').dokioModel;
 var DokioreviewModel = require('../models/dokioreview').dokioreviewModel;
 var DokioService = require('../models/dokioservice').dokioserviceModel;
 var PetCategory = require('../models/petcategory').petcategoryModel;
+var User    = require('../models/users');
 var aws = require('aws-sdk');
 var multer = require('multer');
 var multerS3 = require('multer-s3');
@@ -11,6 +12,18 @@ var memorystorage = multer.memoryStorage();
 var upload = multer({ storage: memorystorage });
 var request = require('request');
 var async = require("async");
+
+function regDateTime(){
+    // lang:ko를 등록한다. 한번 지정하면 자동적으로 사용된다.
+    moment.locale('ko', {
+        weekdays: ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+        weekdaysShort: ["일","월","화","수","목","금","토"],
+    });
+
+    var m = moment().tz('Asia/Seoul');
+    var output = m.format("YYYY년MM월DD일 dddd HH:mm:ss ");
+    return output;
+}
 
 function dynamicSort(property) {
     var sortOrder = 1;
@@ -200,7 +213,8 @@ router.get('/category', function(req, res, next) {
                                 address: dokio.address,
                                 name: dokio.name,
                                 img_url: dokio.img_url,
-                                distance: distance
+                                distance: distance,
+                                wedo: dokio.wedo
                             })
                         }
                         callback();
@@ -344,10 +358,19 @@ router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
 
 router.post('/:dokio_id/review/write', function(req, res, next){
     console.log('dokio_id=', req.params.dokio_id);
+    var dokio_id = req.params.dokio_id;
     console.log('token=', req.query.token);
+    var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
 
-    DokioModel.find({}, function(err, docs) {
-
+    DokioModel.findOne({_id: req.params.dokio_id}, function(err, dokio) {
+        User.findOne({email: decoded_email}, function(err, user) {
+            var review = new DokioreviewModel({
+                user_id: user._id,
+                dokio_id: dokio._id,
+                content: req.query.content,
+                //regdate:
+            })
+        });
     });
 });
 
