@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 var db = require('./db');
 var Petcategories = require('./petcategory').petcategorySchema;
 var Dokioservice = require('./dokioservice').dokioserviceSchema;
-var Dokioreview = require('./dokioreview').dokioreviewSchema;
+var DokioreviewSchema = require('./dokioreview').dokioreviewSchema;
+var DokioreviewModel = require('./dokioreview').dokioreviewModel;
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -11,7 +12,7 @@ autoIncrement.initialize(db);
 
 
 var dokioSchema = new Schema({
-	_id: Number,
+	//_id: Number,
 	name: String,
 	category: {
 		type: String,
@@ -45,7 +46,7 @@ var dokioSchema = new Schema({
 		weekend: String,
 		ectinfo: String
 	},
-	reviews: [Dokioreview],
+	reviews: [DokioreviewSchema],
 	like_count: {type: Number, default: 0}
 
 });

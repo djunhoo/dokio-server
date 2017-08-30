@@ -6,20 +6,27 @@ var DokioModel = require('./dokio');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId
 
-// var autoIncrement = require('mongoose-auto-increment');
-// autoIncrement.initialize(db);
+var autoIncrement = require('mongoose-auto-increment');
+autoIncrement.initialize(db);
 
 
 var dokioreviewSchema = new Schema({
-	// _id: Number,
-	username: String,
+	_id: Number,
+	user_id: {
+ 		type: Number,
+ 		ref: 'userModel'
+	},
+	dokio_id: {
+		type: Number,
+		ref:'dokio'
+	},
 	content: String,
-	date: {type: Date, default: Date.now},
+	regdate: String,
 	review_img: String
 });
 
-// dokioreviewSchema.plugin(autoIncrement.plugin, {model: 'dokioreview', field: '_id', startAt:1, incrementBy: 1})
+dokioreviewSchema.plugin(autoIncrement.plugin, {model: 'dokioreview', field: '_id', startAt:1, incrementBy: 1})
 
-var dokioreview = db.model('dokioreview', dokioreviewSchema);
+var dokioreviewModel = db.model('dokioreview', dokioreviewSchema);
 
-module.exports = {dokioreviewSchema: dokioreviewSchema, dokioreview: dokioreview};
+module.exports = {dokioreviewSchema: dokioreviewSchema, dokioreviewModel: dokioreviewModel};
