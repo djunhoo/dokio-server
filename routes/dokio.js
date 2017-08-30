@@ -368,7 +368,14 @@ router.post('/:dokio_id/review/write', function(req, res, next){
                 user_id: user._id,
                 dokio_id: dokio._id,
                 content: req.query.content,
-                //regdate:
+                regdate: regDateTime()
+            });
+            dokio.reviews.push(review);
+            dokio.save(function(err) {
+                if(err) console.log(err);
+                res.json({
+                    result: dokio
+                });
             })
         });
     });
