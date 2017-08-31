@@ -297,7 +297,7 @@ router.get('/add_dokio', function(req, res, next) {
 
 router.get('/:dokio_id', function(req, res, next) {
     var dokio_id = req.params.dokio_id;
-    DokioModel.findOne({ _id: dokio_id }, '-_id -__v -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+    DokioModel.findOne({ _id: dokio_id }, '-_id -__v -price._id').populate('services', '-_id -__v').populate('petcategories', '-_id -__v').populate('reviews.user_id', '-__v -password -token -_id -memos -favorites -pets').exec(function(err, dokio) {
         if(err) next(err);
         if(dokio) {
             res.json({
