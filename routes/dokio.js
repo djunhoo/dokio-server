@@ -5,6 +5,7 @@ var DokioreviewModel = require('../models/dokioreview').dokioreviewModel;
 var DokioService = require('../models/dokioservice').dokioserviceModel;
 var PetCategory = require('../models/petcategory').petcategoryModel;
 var User    = require('../models/users');
+var CastModel = require('../models/cast').CastModel;
 var aws = require('aws-sdk');
 var multer = require('multer');
 var multerS3 = require('multer-s3');
@@ -58,6 +59,23 @@ router.get('/', function(req, res, next) {
     res.render('dokio/dokio', { title: 'Express' });
 });
 
+router.get('/cast', function(req, res, next){
+    CastModel.find({}, '-__v -_id -url', function(err, casts){
+        if(casts){
+            res.json({
+                success_code: 1,
+                result: casts
+            })
+        }
+        else {
+            res.json({
+                success_code: 0,
+                message: "전송이 되지 않습니다.",
+                result: null
+            })
+        }
+    });
+});
 
 router.get('/filter', function(req, res, next) {
     console.log('req=',req.query);
