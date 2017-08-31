@@ -48,15 +48,13 @@ module.exports= function (passport) {
 			if(user) {
 				res.json({
 					success_code: 1,
-					result: {
-						pets: user
-					}
+					result: user
 				});
 			} else {
 				res.json({
 					success_code: 0,
 					message: "사용자를 찾을수 없습니다.",
-					result: null,
+					result: null
 				});
 			}
 
@@ -81,10 +79,18 @@ module.exports= function (passport) {
 				pet_img: location
 			});
 			user.pets.push(pet);
-			user.save(function(err){
-				if(err) console.log(err);
+			user.save(function(err, user){
+				if(err) next(err);
+				if(user){
+					res.json({
+						success_code: 1,
+						result: user
+					})
+				} else
 				res.json({
-					user: user
+					success_code: 0,
+					message: "반려견 등록 실패",
+					result: null
 				});
 			});
 		})
@@ -98,15 +104,13 @@ module.exports= function (passport) {
 				if(user) {
 					res.json({
 						success_code: 1,
-						result: {
-							user: user
-						}
+						result: null
 					});
 				} else {
 					res.json({
 						success_code: 0,
 						message: "반려견 삭제 실패",
-						result: null,
+						result: null
 					});
 				}
 
@@ -134,15 +138,13 @@ module.exports= function (passport) {
 				if(user) {
 					res.json({
 						success_code: 1,
-						result: {
-							user: user
-						}
+						result: null
 					});
 				} else {
 					res.json({
 						success_code: 0,
 						message: "반려견 삭제 실패",
-						result: null,
+						result: null
 					});
 				}
 				// });
@@ -162,11 +164,21 @@ module.exports= function (passport) {
 					date: regDateTime()
 				});
 				user.memos.push(memo);
-				user.save(function(err){
-					if(err) console.log(err);
-					res.json({
-						user: user
-					});
+						user.save(function(err, user){
+							if(err) next(err);
+							if(user) {
+							res.json({
+								success_code: 1,
+								result: user
+							});
+						} else {
+							res.json({
+							    success_code: 0,
+							    message: "메모 작성 실패",
+							    result: null
+						})
+
+				}
 				});
 		});
 	});
@@ -176,20 +188,18 @@ module.exports= function (passport) {
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
 		User.update({email: decoded_email}, {$pull: {memos: {_id: req.query.memo_id}}}, function(err, user) {
-				if(user) {
-					res.json({
-						success_code: 1,
-						result: {
-							user: user
-						}
-					});
-				} else {
-					res.json({
-						success_code: 0,
-						message: "메모 삭제 실패",
-						result: null,
-					});
-				}
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: null
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "메모 삭제 실패",
+					result: null
+				});
+			}
 
 			});
 
@@ -204,21 +214,43 @@ module.exports= function (passport) {
 
 		User.update({email: decoded_email, "memos._id": req.query.memo_id}, {$set:{"memos.$.content": content}}, function(err, user) {
 
-				if(user) {
-					res.json({
-						success_code: 1,
-						result: {
-							user: user
-						}
-					});
-				} else {
-					res.json({
-						success_code: 0,
-						message: "메모 삭제 실패",
-						result: null,
-					});
-				}
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: null
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "메모 삭제 실패",
+					result: null
+				});
+			}
 			});
+	});
+
+	router.get('/memo/list', function(req, res, next) {
+
+		console.log('token=', req.query);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		User.find({email:decoded_email}, '-password -__v').populate('memos').exec(function(err, user) {
+			if(err) next(err);
+			console.log('user = ', user)
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: user
+
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "메모를 찾을수 없습니다.",
+					result: null
+				});
+			}
+
+		});
 	});
 
 	// 카카오 인증
