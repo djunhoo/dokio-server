@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 
 var CastSchema = new Schema({
 	title: String,
-	img_src: String,
+	castimg: String,
 	url: String
 })
 
