@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "amazon-s3-uri": "0.0.3",
     "async": "^2.5.0",
     "aws-sdk": "^2.94.0",
     "bcrypt-nodejs": "0.0.3",

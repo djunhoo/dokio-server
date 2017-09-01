@@ -26,8 +26,9 @@ var upload2 = multer({
                 console.log(file);
                 cb(null, Date.now().toString() + file.originalname); //use Date.now() for unique file keys
             }
-        })
-    });
+       })
+});
+const AmazonS3URI = require('amazon-s3-uri')
 
 function regDateTime(){
     // lang:ko를 등록한다. 한번 지정하면 자동적으로 사용된다.
@@ -430,6 +431,112 @@ router.post('/:dokio_id/review/write', upload2.single('review_file'), function(r
             })
         });
     });
+});
+
+router.post('/:dokio_id/review/delete', function(req, res, next) {
+    console.log('token=', req.query.token);
+    var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+    console.log('decoded_email=', decoded_email);
+    DokioModel.findOne({_id: req.params.dokio_id}, function(err, dokio) {
+        if (err) console.log('err=', err);
+        if (!dokio) {
+            res.json({
+                success_code: 0,
+                message: "유저 아이디 값이 맞지않습니다.",
+                result: null
+            })
+        } else {
+            var review_id = req.query.review_id;
+            var rev = dokio.reviews.id(review_id);
+            var review_url = rev.review_img;
+            if(review_url) { // 댓글에 이미 이미지가 있다면,
+                try { // 이미지 삭제
+                    const { region, bucket, key } = AmazonS3URI(review_url)
+                    console.log('key=', key);
+                    console.log('bucket=', bucket);
+                    var delete_params = { Bucket: "dokio2", Key: key };
+                    s3.deleteObject(delete_params, function(err, data) {
+                        if(err) console.log(err);
+                        else {
+                            console.log(data);
+                        }
+                    });
+                } catch(err) {
+                  console.warn(`${review_url} is not a valid S3 uri`) // should not happen because `uri` is valid in that example
+                }
+            }
+            dokio.reviews.pull({_id: req.query.review_id});
+            dokio.save(function(err, doc){
+                if(err) next(err);
+                if(doc){
+                    res.json({
+                        success_code: 1,
+                        result: null
+                    })
+                } else
+                res.json({
+                    success_code: 0,
+                    message: "리뷰 삭제 실패",
+                    result: null
+                });
+            });
+        }
+    })
+});
+
+router.post('/:dokio_id/review/update', upload2.single('review_file'), function(req, res, next) {
+    console.log('token=', req.query.token);
+    var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+    console.log('decoded_email=', decoded_email);
+    DokioModel.findOne({_id: req.params.dokio_id}, function(err, dokio) {
+        if (err) console.log('err=', err);
+        if (!dokio) {
+            res.json({
+                success_code: 0,
+                message: "유저 아이디 값이 맞지않습니다.",
+                result: null
+            })
+        } else {
+            var review_id = req.query.review_id;
+            var rev = dokio.reviews.id(review_id);
+            if(req.file) { // 파일이 있다면
+                try {
+                  var review_url = rev.review_img;
+                  console.log('review=', review_url)
+                  if(review_url) { // 댓글에 이미 이미지가 있다면,
+                        const { region, bucket, key } = AmazonS3URI(review_url)
+                        console.log('key=', key);
+                        console.log('bucket=', bucket);
+                        var delete_params = { Bucket: "dokio2", Key: key };
+                        s3.deleteObject(delete_params, function(err, data) {
+                            if(err) console.log(err);
+                            else {
+                                console.log(data);
+                            }
+                        });
+                  }
+                } catch(err) {
+                  console.warn(`${review_url} is not a valid S3 uri`) // should not happen because `uri` is valid in that example
+                }
+                rev.review_img = req.file.location;
+            }
+            rev.content = req.query.content;
+            dokio.save(function(err, doc){
+                if(err) next(err);
+                if(doc){
+                    res.json({
+                        success_code: 1,
+                        result: null
+                    })
+                } else
+                res.json({
+                    success_code: 0,
+                    message: "리뷰 수정 실패",
+                    result: null
+                });
+            });
+        }
+    })
 });
 
 module.exports = router;
