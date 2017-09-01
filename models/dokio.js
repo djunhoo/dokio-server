@@ -4,7 +4,7 @@ var Petcategories = require('./petcategory').petcategorySchema;
 var Dokioservice = require('./dokioservice').dokioserviceSchema;
 var DokioreviewSchema = require('./dokioreview').dokioreviewSchema;
 var DokioreviewModel = require('./dokioreview').dokioreviewModel;
-
+var random = require('mongoose-simple-random');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var autoIncrement = require('mongoose-auto-increment');
@@ -52,7 +52,7 @@ var dokioSchema = new Schema({
 });
 
 dokioSchema.plugin(autoIncrement.plugin, {model: 'dokio', field: '_id', startAt:1, incrementBy: 1})
-
+dokioSchema.plugin(random);
 var dokioModel = db.model('dokio', dokioSchema);
 
 module.exports = {dokioModel:dokioModel, dokioSchema:dokioSchema};

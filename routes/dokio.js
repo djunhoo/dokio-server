@@ -17,7 +17,6 @@ var jwt = require('jwt-simple');
 var configAuth = require('../config/auth');
 var moment = require('moment-timezone');
 var fs = require('fs');
-var random = require('mongoose-simple-random');
 var s3 = new aws.S3();
 var upload2 = multer({
         storage: multerS3({
