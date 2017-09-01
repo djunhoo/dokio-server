@@ -16,9 +16,8 @@ var async = require("async");
 var jwt = require('jwt-simple');
 var configAuth = require('../config/auth');
 var moment = require('moment-timezone');
-var multer = require('multer');
-var multerS3 = require('multer-s3');
 var fs = require('fs');
+var random = require('mongoose-simple-random');
 var s3 = new aws.S3();
 var upload2 = multer({
         storage: multerS3({
@@ -74,6 +73,18 @@ router.get('/cast', function(req, res, next){
                 result: null
             })
         }
+    });
+});
+
+router.get('/marketing', function(req, res, next){
+    DokioModel.findRandom({}, {}, {limit: 10}, function(err, results) {
+      if (err) {
+        console.log(err); // 5 elements
+      }
+      res.json({
+        success_code:1,
+        result : results
+      });
     });
 });
 
