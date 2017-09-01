@@ -76,7 +76,7 @@ router.get('/cast', function(req, res, next){
 });
 
 router.get('/marketing', function(req, res, next){
-    DokioModel.findRandom({}, {}, {limit: 10}, function(err, results) {
+    DokioModel.findRandom({},'-_id -phonenumber -__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category', {limit: 10}, function(err, results) {
       if (err) {
         console.log(err); // 5 elements
       }
