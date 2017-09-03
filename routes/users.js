@@ -84,7 +84,7 @@ module.exports= function (passport) {
 				if(user){
 					res.json({
 						success_code: 1,
-						result: user
+						result: null
 					})
 				} else
 				res.json({
