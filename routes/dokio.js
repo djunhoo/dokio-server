@@ -416,25 +416,35 @@ router.post('/:dokio_id/review/write', upload2.single('review_file'), function(r
         User.findOne({email: decoded_email}, function(err, user) {
             console.log('user=', user);
             console.log('dokio=', dokio);
-            var review = new DokioreviewModel({
-                user_id: user._id,
-                dokio_id: dokio._id,
-                content: req.query.content,
-                regdate: regDateTime(),
-                review_img: location
-            });
-            dokio.reviews.push(review);
-            dokio.save(function(err) {
-                if(err) console.log(err);
+            if(err) console.log(err);
+            if(!user) {
                 res.json({
-                    success_code: 1,
-                    result: {
-                        email: user.email,
-                        content: req.query.content,
-                        regdate: review.regdate
-                    }
+                    success_code: 0,
+                    message: "토큰이 잘못되어있습니다.",
+                    result: null
                 });
-            })
+            }
+            else {
+              var review = new DokioreviewModel({
+                  user_id: user._id,
+                  dokio_id: dokio._id,
+                  content: req.query.content,
+                  regdate: regDateTime(),
+                  review_img: location
+              });
+              dokio.reviews.push(review);
+              dokio.save(function(err) {
+                  if(err) console.log(err);
+                  res.json({
+                      success_code: 1,
+                      result: {
+                          email: user.email,
+                          content: req.query.content,
+                          regdate: review.regdate
+                      }
+                  });
+              })
+            }
         });
     });
 });
