@@ -62,7 +62,7 @@ module.exports= function (passport) {
 	});
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
-		console.log('query=', req.query);
+		console.log('body=', req.body);
 		console.log('token=', req.query.token);
 		console.log('file=', req.file);
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
