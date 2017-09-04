@@ -63,9 +63,9 @@ module.exports= function (passport) {
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
 		console.log('body=', req.body);
-		console.log('query_token=', req.query.token);
+		console.log('query_token=', req.body.token);
 		console.log('file=', req.file);
-		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
 		var location;
 		if(req.file) {

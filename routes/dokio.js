@@ -428,7 +428,7 @@ router.post('/:dokio_id/review/write', upload2.single('review_file'), function(r
               var review = new DokioreviewModel({
                   user_id: user._id,
                   dokio_id: dokio._id,
-                  content: req.query.content,
+                  content: req.body.content,
                   regdate: regDateTime(),
                   review_img: location
               });
