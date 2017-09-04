@@ -406,7 +406,7 @@ router.post('/:dokio_id/review/write', upload2.single('review_file'), function(r
     console.log('dokio_id=', req.params.dokio_id);
     var dokio_id = req.params.dokio_id;
     console.log('token=', req.body.token);
-    var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+    var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
     var location;
     if(req.file) {
         location = req.file.location;
