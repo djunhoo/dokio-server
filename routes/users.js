@@ -408,32 +408,6 @@ module.exports= function (passport) {
 			});
 	});
 
-	router.get('/mypage/:token/pet', function(req, res) {
-			var decoded_email = jwt.decode(req.params.token, configAuth.jwt_secret);
-			console.log('decoded_email=', decoded_email);
-			User.findOne({email: decoded_email}, function(err, user) {
-				console.log('user=', user);
-			        if (err)
-					    console.log('err=', err);
-					if (user) {
-					    // 마이페이지 정보
-					    res.json({
-					    	success_code: 1,
-					    	result: {
-					    		pet: user.pet
-	                         }
-					    });
-					} else {
-					    res.json({
-					    	success_code: 0,
-					    	message: "토큰이 잘못됬거나 User가 없습니다.",
-					    	result: null
-					    });
-					}
-			});
-	});
-
-
 	router.get('/signup', function (req, res) {
 	    res.render('users/joinform', { message: req.flash('signupMessage'), title:'로그인' });
 	});
