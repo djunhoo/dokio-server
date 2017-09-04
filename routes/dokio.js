@@ -439,7 +439,7 @@ router.post('/:dokio_id/review/write', upload2.single('review_file'), function(r
                       success_code: 1,
                       result: {
                           email: user.email,
-                          content: req.query.content,
+                          content: review.content,
                           regdate: review.regdate
                       }
                   });
