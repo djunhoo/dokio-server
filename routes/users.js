@@ -41,8 +41,8 @@ module.exports= function (passport) {
 		res.render('index', {title: '메인페이지'});
 	});
 	router.get('/pet/:pet_id', function(req, res, next){
-		console.log('token=', req.body.token);
-		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 		User.find({email: decoded_email},{pets: true}, function(err, user) {
 			if(err) next(err);
 			if(user) {
@@ -60,6 +60,28 @@ module.exports= function (passport) {
 
 		});
 	});
+
+	router.get('/pet/list', function(req, res, next){
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		User.find({email: decoded_email},{pets: true}, function(err, user) {
+			if(err) next(err);
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: pets
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "사용자를 찾을수 없습니다.",
+					result: null
+				});
+			}
+
+		});
+	});
+
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
 		console.log('body=', req.body);
@@ -98,10 +120,10 @@ module.exports= function (passport) {
 	});
 
 	router.post('/pet/delete', function(req, res, next) {
-		console.log('token=', req.query.token);
-		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('token=', req.body.token);
+		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
-		User.update({email: decoded_email}, {$pull: {pets: {_id: req.query.pet_id}}}, function(err, user) {
+		User.update({email: decoded_email}, {$pull: {pets: {_id: req.body.pet_id}}}, function(err, user) {
 				if(user) {
 					res.json({
 						success_code: 1,
@@ -121,20 +143,20 @@ module.exports= function (passport) {
 
 //pet update
 	router.post('/pet/update', upload.single('pet_file'), function(req, res, next) {
-		console.log('token=', req.query.token);
-		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('token=', req.body.token);
+		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
 		var location;
 		if(req.file) {
 			location = req.file.location;
 		}
-		var name = req.query.pet_name;
-		var age = req.query.pet_age;
-		var sex = req.query.pet_sex;
-		var weight = req.query.pet_weight;
+		var name = req.body.pet_name;
+		var age = req.body.pet_age;
+		var sex = req.body.pet_sex;
+		var weight = req.body.pet_weight;
 
 
-		User.update({email: decoded_email, "pets._id": req.query.pet_id}, {$set:{"pets.$.name": name, "pets.$.age": age, "pets.$.sex": sex, "pets.$.weight": weight, "pets.$.pet_img":location}}, function(err, user) {
+		User.update({email: decoded_email, "pets._id": req.body.pet_id}, {$set:{"pets.$.name": name, "pets.$.age": age, "pets.$.sex": sex, "pets.$.weight": weight, "pets.$.pet_img":location}}, function(err, user) {
 
 				if(user) {
 					res.json({
