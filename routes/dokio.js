@@ -414,6 +414,8 @@ router.post('/:dokio_id/review/write', upload2.single('review_file'), function(r
 
     DokioModel.findOne({_id: req.params.dokio_id}, function(err, dokio) {
         User.findOne({email: decoded_email}, function(err, user) {
+            console.log('user=', user);
+            console.log('dokio=', dokio);
             var review = new DokioreviewModel({
                 user_id: user._id,
                 dokio_id: dokio._id,
