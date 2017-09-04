@@ -64,9 +64,10 @@ module.exports= function (passport) {
 	router.get('/pet/list', function(req, res, next){
 		console.log('token=', req.query.token);
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
-		User.find({email: decoded_email},{pets: true}, function(err, user) {
+		User.find({email: decoded_email},{pets: true, _id: false}, function(err, user) {
 			if(err) next(err);
 			if(user) {
+				console.log(user.pets);
 				res.json({
 					success_code: 1,
 					result: user.pets
