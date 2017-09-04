@@ -40,49 +40,6 @@ module.exports= function (passport) {
 	router.get('/', function(req, res) {
 		res.render('index', {title: '메인페이지'});
 	});
-	router.get('/pet/:pet_id', function(req, res, next){
-		console.log('token=', req.query.token);
-		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
-		User.find({email: decoded_email},{pets: true}, function(err, user) {
-			if(err) next(err);
-			if(user) {
-				res.json({
-					success_code: 1,
-					result: user
-				});
-			} else {
-				res.json({
-					success_code: 0,
-					message: "사용자를 찾을수 없습니다.",
-					result: null
-				});
-			}
-
-		});
-	});
-
-	router.get('/pet/list', function(req, res, next){
-		console.log('token=', req.query.token);
-		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
-		User.find({email: decoded_email},{pets: true, _id: false}, function(err, user) {
-			if(err) next(err);
-			if(user) {
-				console.log(user.pets);
-				res.json({
-					success_code: 1,
-					result: user.pets
-				});
-			} else {
-				res.json({
-					success_code: 0,
-					message: "사용자를 찾을수 없습니다.",
-					result: null
-				});
-			}
-
-		});
-	});
-
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
 		console.log('body=', req.body);
@@ -104,21 +61,65 @@ module.exports= function (passport) {
 			});
 			user.pets.push(pet);
 			user.save(function(err, user){
-				if(err) next(err);
+				if(err) console.log(err);
 				if(user){
 					res.json({
 						success_code: 1,
 						result: null
 					})
-				} else
-				res.json({
-					success_code: 0,
-					message: "반려견 등록 실패",
-					result: null
-				});
+				} else {
+					res.json({
+						success_code: 0,
+						message: "wefwefe",
+						result: null
+					})
+				}
 			});
 		})
 	});
+	router.get('/pet/list', function(req, res, next){
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log(decoded_email);
+		User.findOne({email: decoded_email}, function(err, user) {
+			if(err) console.log(err);
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: user.pets
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "사용자를 찾을수 없습니다.",
+					result: null
+				});
+			}
+
+		});
+	});
+	router.get('/pet/:pet_id', function(req, res, next){
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		User.find({email: decoded_email},{pets: true}, function(err, user) {
+			if(err) next(err);
+			if(user) {
+				res.json({
+					success_code: 1,
+					result: user
+				});
+			} else {
+				res.json({
+					success_code: 0,
+					message: "사용자를 찾을수 없습니다.",
+					result: null
+				});
+			}
+
+		});
+	});
+
+
 
 	router.post('/pet/delete', function(req, res, next) {
 		console.log('token=', req.body.token);
