@@ -63,7 +63,7 @@ module.exports= function (passport) {
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
 		console.log('body=', req.body);
-		console.log('token=', req.query.token);
+		console.log('query_token=', req.query.token);
 		console.log('file=', req.file);
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
@@ -73,10 +73,10 @@ module.exports= function (passport) {
 		}
 		User.findOne({email: decoded_email}, function(err, user) {
 			var pet = new petModel({
-				name: req.query.pet_name,
-				age: req.query.pet_age,
-				sex: req.query.pet_sex,
-				weight: req.query.pet_weight,
+				name: req.body.pet_name,
+				age: req.body.pet_age,
+				sex: req.body.pet_sex,
+				weight: req.body.pet_weight,
 				pet_img: location
 			});
 			user.pets.push(pet);

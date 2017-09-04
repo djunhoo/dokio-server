@@ -428,7 +428,11 @@ router.post('/:dokio_id/review/write', upload2.single('review_file'), function(r
                 if(err) console.log(err);
                 res.json({
                     success_code: 1,
-                    result: null
+                    result: {
+                        email: user.email,
+                        content: req.query.content,
+                        regdate: review.regdate
+                    }
                 });
             })
         });
