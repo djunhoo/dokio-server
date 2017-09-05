@@ -28,6 +28,20 @@ var upload2 = multer({
             }
        })
 });
+
+
+function changetheV(a) {
+    var b = [];
+    if(a) {
+    if( Object.prototype.toString.call( a ) === '[object Array]' ) {
+            for(var i=0; i<a.length; i++) {
+                b.push(parseInt(a[i]));
+            }
+            return b;
+    }
+    }
+
+}
 const AmazonS3URI = require('amazon-s3-uri')
 
 function regDateTime(){
@@ -91,9 +105,14 @@ router.get('/marketing', function(req, res, next){
 router.get('/filter', function(req, res, next) {
     console.log('req=',req.query);
     sort = req.query.sort;
+    var filter_services
+    if(req.query.service) {
+        var filter_services = changetheV(req.query.service);
+    }
     console.log(sort);
     if(!sort) {
-        DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+        DokioModel.find({category: req.query.thema},
+            {services: { $in: filter_services }},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
         .exec(function(err, dokio){
                 if(err) next(err);
                 res.json({
@@ -104,7 +123,8 @@ router.get('/filter', function(req, res, next) {
     } else {
         if(sort == "price")
         {
-            DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+            DokioModel.find({category: req.query.thema},
+                {services: { $in: filter_services }},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
                 if(err) next(err);
                 if(dokio) {
                     res.json({
@@ -133,7 +153,8 @@ router.get('/filter', function(req, res, next) {
                 mylon = 126.958563;
             }
             var GeoPoint = require('geopoint');
-            DokioModel.find({},'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+            DokioModel.find({category: req.query.thema},
+                {services: { $in: filter_services }}, '-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
             .exec(function(err, dokios){
                 if(err) next(err);
                 var arr = [];
@@ -161,7 +182,8 @@ router.get('/filter', function(req, res, next) {
             });
         }
         else if(sort == "like"){
-            DokioModel.find({},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+            DokioModel.find({category: req.query.thema},
+                {services: { $in: filter_services }},'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
                     if(err) next(err);
                     if(dokio) {
                         res.json({
@@ -324,20 +346,6 @@ router.get('/:dokio_id', function(req, res, next) {
         }
     });
 });
-
-
-function changetheV(a) {
-    var b = [];
-    if(a) {
-    if( Object.prototype.toString.call( a ) === '[object Array]' ) {
-            for(var i=0; i<a.length; i++) {
-                b.push(parseInt(a[i]));
-            }
-            return b;
-    }
-    }
-
-}
 
 router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
     console.log('req.body=', req.body);
