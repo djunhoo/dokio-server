@@ -101,12 +101,14 @@ module.exports= function (passport) {
 	router.get('/pet/:pet_id', function(req, res, next){
 		console.log('token=', req.query.token);
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
-		User.find({email: decoded_email},{pets: true}, function(err, user) {
+		User.findOne({email: decoded_email},function(err, user) {
 			if(err) next(err);
 			if(user) {
+				var pet_id = req.params.pet_id
+				var pet = user.pets.id(pet_id);
 				res.json({
 					success_code: 1,
-					result: user
+					result: pet
 				});
 			} else {
 				res.json({
@@ -194,7 +196,7 @@ module.exports= function (passport) {
 							if(user) {
 							res.json({
 								success_code: 1,
-								result: user
+								result: null
 							});
 						} else {
 							res.json({
