@@ -257,35 +257,67 @@ module.exports= function (passport) {
 	});
 
 
+
+
+
+
+
+
+
 	router.post('/memo/write', function(req, res, next) {
-		console.log('token=', req.query.token);
-		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
+		console.log('body=', req.body);
+		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
+		var fist_site = false;
+		var mymemo = {
+			content: req.body.content,
+			date: req.body.date
+		 };
+		User.findOne({email: decoded_email},
+		 function(err, user) {
+		 	var memoArray = user.memos
+		 	for(var i=0; i<memoArray.length; i++) {
+		 		if(memoArray[i].date == req.body.date) {
+		 			fist_site = true;
+		 			memoArray[i].content.push(req.body.content);
+		 		}
+		 	}
 
-		User.findOne({email: decoded_email}, function(err, user) {
-				var memo = new memoModel({
-					content: req.query.memo_content,
-					date: regDateTime()
-				});
-				user.memos.push(memo);
-						user.save(function(err, user){
-							if(err) next(err);
-							if(user) {
-							res.json({
-								success_code: 1,
-								result: null
-							});
-						} else {
-							res.json({
-							    success_code: 0,
-							    message: "메모 작성 실패",
-							    result: null
-						})
+		 	if(!fist_site) {
+		 		user.memos.push(mymemo);
+		 	}
+		 	user.save(function(err, doc) {
+		 		if(err) {
+		 			res.json({
+		 				success_code: 0,
+		 				message: "수정실패",
+		 				result: null
+		 			})
+		 		} else {
+		 			res.json({
+		 				success_code: 1,
+		 				result: null
+		 			})
+		 		}
 
-				}
-				});
+		 	})
 		});
 	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	router.post('/memo/delete', function(req, res, next) {
 		console.log('token=', req.query.token);
@@ -337,13 +369,13 @@ module.exports= function (passport) {
 
 		console.log('token=', req.query);
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
-		User.find({email:decoded_email}, '-password -__v').populate('memos').exec(function(err, user) {
+		User.findOne({email:decoded_email}, '-password -__v',function(err, user) {
 			if(err) next(err);
 			console.log('user = ', user)
 			if(user) {
 				res.json({
 					success_code: 1,
-					result: user
+					result: user.memos
 
 				});
 			} else {

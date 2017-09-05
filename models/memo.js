@@ -8,7 +8,7 @@ autoIncrement.initialize(db);
 
 var memoSchema = new Schema({
 	// userid: String,
-	content: String,
+	content: [String],
 	date: String
 });
 

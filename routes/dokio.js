@@ -141,10 +141,12 @@ router.get('/filter', function(req, res, next) {
         DokioModel.find({
             category: req.query.thema,
             services: { $in: arrayfilter },
-            "price.0.price":{
-                        $gt:gt,
-                        $lt:lt
-            }},
+            "price.0.price": {
+                    $gt: gt,
+                    $lt: lt
+            }
+        },
+
             '-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
         .exec(function(err, dokio){
                 if(err) console.log(err);
