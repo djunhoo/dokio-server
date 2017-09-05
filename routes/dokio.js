@@ -104,18 +104,47 @@ router.get('/marketing', function(req, res, next){
 router.get('/filter', function(req, res, next) {
     console.log('req=',req.query);
     sort = req.query.sort;
-    var filter_services = req.query.service
+    var filter_services = req.query.service;
+    var price = req.query.price;
+    var gt, lt, kg;
+    var weight = req.query.weight;
+    if( weight == 1 ) {
+        kg = 3;
+    } else if(weight == 2) {
+        kg = 8;
+    } else if(weight == 3) {
+        kg = 13;
+    } else if(weight == 4) {
+        kg = 17;
+    } else if(weight == 5) {
+        kg = 21
+    }
+    if(price == 1 ){
+        gt = 0;
+        lt = 29999;
+    } else if( price == 2){
+        gt = 29999;
+        lt = 39999;
+    } else if( price == 3) {
+        gt = 39999;
+        lt = 49999;
+    } else if ( price == 4 ) {
+        gt = 49999;
+        lt = 100000;
+    }
     console.log('filter_serivces=', filter_services)
-
     console.log('sort=', sort);
-    var arrayfilter = changetheV(filter_services);
+    console.log('gt, lt=', gt, lt);
+    console.log('kg=', kg);
+    var arrayfilter     = changetheV(filter_services);
     if(!sort) {
         DokioModel.find({
             category: req.query.thema,
             services: { $in: arrayfilter },
-            "price[0].price":{$gt:15000,
-                              $lt:20000}
-                        },
+            "price.0.price":{
+                        $gt:gt,
+                        $lt:lt
+            }},
             '-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
         .exec(function(err, dokio){
                 if(err) console.log(err);
