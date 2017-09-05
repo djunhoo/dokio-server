@@ -40,7 +40,6 @@ function changetheV(a) {
             return b;
     }
     }
-
 }
 const AmazonS3URI = require('amazon-s3-uri')
 
@@ -113,8 +112,10 @@ router.get('/filter', function(req, res, next) {
     if(!sort) {
         DokioModel.find({
             category: req.query.thema,
-            services: { $in: arrayfilter }
-                             },
+            services: { $in: arrayfilter },
+            "price[0].price":{$gt:15000,
+                              $lt:20000}
+                        },
             '-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
         .exec(function(err, dokio){
                 if(err) console.log(err);

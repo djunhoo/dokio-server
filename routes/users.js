@@ -14,6 +14,7 @@ module.exports= function (passport) {
 	var fs = require('fs');
 	var s3 = new AWS.S3();
 	var moment = require('moment-timezone');
+	const AmazonS3URI = require('amazon-s3-uri')
 	var upload = multer({
 	    storage: multerS3({
 	        s3: s3,
@@ -24,6 +25,17 @@ module.exports= function (passport) {
 	        }
 	    })
 	});
+	function changetheV(a) {
+	    var b = [];
+	    if(a) {
+	    if( Object.prototype.toString.call( a ) === '[object Array]' ) {
+	            for(var i=0; i<a.length; i++) {
+	                b.push(parseInt(a[i]));
+	            }
+	            return b;
+	    }
+	    }
+	}
 
 	function regDateTime(){
 	    // lang:ko를 등록한다. 한번 지정하면 자동적으로 사용된다.
@@ -124,23 +136,88 @@ module.exports= function (passport) {
 
 
 	router.post('/pet/delete', function(req, res, next) {
+		console.log('body=', req.body);
 		console.log('token=', req.body.token);
+		console.log('query token=', req.query.token);
+		console.log('query', req.query);
 		var decoded_email = jwt.decode(req.body.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
-		User.update({email: decoded_email}, {$pull: {pets: {_id: req.body.pet_id}}}, function(err, user) {
-				if(user) {
+		User.findOne({email: decoded_email}, function(err, user) {
+				if(err) console.log('err=', err);
+				if(!user) {
 					res.json({
-						success_code: 1,
+						success_code: 0,
+						message: "유저 아이디 값이 맞지 않습니다.",
 						result: null
 					});
 				} else {
-					res.json({
-						success_code: 0,
-						message: "반려견 삭제 실패",
-						result: null
+					var pet_id = req.body.pet_id;
+					console.log('pet_id string=', pet_id);
+
+					var pet_idUpgrade;
+					if(Array.isArray(pet_id)) {
+						pet_idUpgrade = changetheV(pet_id);
+						pet_length = pet_id.length;
+						for(var i=0; i<pet_length; i++) {
+							var pet = user.pets.id(pet_idUpgrade[i]);
+							if(pet.pet_img) {
+								try { // 이미지 삭제
+								    const { region, bucket, key } = AmazonS3URI(pet.pet_img);
+								    console.log('key=', key);
+								    console.log('bucket=', bucket);
+								    var delete_params = { Bucket: "dokio2", Key: key };
+								    s3.deleteObject(delete_params, function(err, data) {
+								        if(err) console.log(err);
+								        else {
+								            console.log(data);
+								        }
+								    });
+								} catch(err) {
+								  console.warn(`${review_url} is not a valid S3 uri`) // should not happen because `uri` is valid in that example
+								}
+							}
+						}
+						for(var i=0; i<pet_length; i++) {
+							mypet_id = pet_idUpgrade[i];
+							user.pets.pull({_id: mypet_id});
+						}
+					} else {
+						pet_idUpgrade = pet_id;
+						var pet = user.pets.id(pet_idUpgrade);
+						if(pet.pet_img) {
+							try { // 이미지 삭제
+							    const { region, bucket, key } = AmazonS3URI(pet.pet_img);
+							    console.log('key=', key);
+							    console.log('bucket=', bucket);
+							    var delete_params = { Bucket: "dokio2", Key: key };
+							    s3.deleteObject(delete_params, function(err, data) {
+							        if(err) console.log(err);
+							        else {
+							            console.log(data);
+							        }
+							    });
+							} catch(err) {
+							  console.warn(`${review_url} is not a valid S3 uri`) // should not happen because `uri` is valid in that example
+							}
+						}
+						user.pets.pull({_id: pet._id});
+					}
+					user.save(function(err, doc) {
+						if(err) console.log(err);
+						if(doc) {
+							res.json({
+								success_code: 1,
+								result: null
+							});
+						} else {
+							res.json({
+								success_code: 0,
+								message: "펫 삭제 실패",
+								result: null
+							});
+						}
 					});
 				}
-
 			});
 
 	});
