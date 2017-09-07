@@ -477,7 +477,7 @@ module.exports= function (passport) {
     	         res.json({
     	         	success_code: 2,
     	         	result: {
-    	         		token: user.token;
+    	         		token: user.token
     	         	}
     	         })
     	    } else {
