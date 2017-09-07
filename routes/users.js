@@ -499,12 +499,12 @@ module.exports= function (passport) {
 
     });
 	// 프로필 라우터
-
+	// 프로필
 	router.get('/mypage', function(req, res) {
 		console.log('token=', req.query.token);
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
-		User.findOne({email: decoded_email}, function(err, user) {
+		User.findOne({email: decoded_email},'-__v -_id -memos -pets -password -favorites', function(err, user) {
 			console.log('user=', user);
 		        if (err)
 				    console.log('err=', err);
@@ -512,9 +512,7 @@ module.exports= function (passport) {
 				    // 마이페이지 정보
 				    res.json({
 				    	success_code: 1,
-				    	result: {
-				    		user: user
-                         }
+				    	result: user
 				    });
 				} else {
 				    res.json({
@@ -664,7 +662,7 @@ var params = {
 				User.findOne({_id: user_id}, function(err, user) {
 					res.locals.login = req.isAuthenticated();
 					console.log('user=', user);
-					res.render('users/mypage', {title: "내 정보 조회", user:user, categorys: doc});
+					res.render('users7', {title: "내 정보 조회", user:user, categorys: doc});
 				});
 			} else {
 				res.redirect('/users/login');
@@ -742,7 +740,7 @@ var params = {
 				});
 			} else {
 				res.json({
-					success_code: 0,
+            		success_code: 0,
 					message: "즐겨찾기 삭제 실패",
 					result: null,
 				});
