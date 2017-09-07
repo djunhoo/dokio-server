@@ -463,12 +463,46 @@ module.exports= function (passport) {
           });
           }
 	});
+    router.post('/login/sns', function(req, res, next) {
+    	console.log('username=', req.body.username);
+    	console.log('img=', req.body.myprof_img);
+    	User.findOne({email: req.body.username}, function(err, user) {
+    	    if (err)
+    	          res.json({
+    	          	success_code: 0,
+    	          	message: "실패",
+    	          	result: null
+    	          })
+    	    if (user) {
+    	         res.json({
+    	         	success_code: 2,
+    	         	result: {
+    	         		token: user.token;
+    	         	}
+    	         })
+    	    } else {
+    	          var newUser         = new User();
+    	          newUser.email = req.body.username;
+    	          newUser.myprof_img = req.body.myprof_img;
+    	          newUser.token    = jwt.encode(req.body.username, configAuth.jwt_secret);
+    	          newUser.save(function(err) {
+    	              if (err)
+    	                  console.log('err=', err);
+    	              res.json({
+    	              	success_code: 1,
+    	              	result: null
+    	              })
+    	          });
+    	    }
+    	});
 
+
+    });
 	// 프로필 라우터
 
-	router.get('/mypage/:token', function(req, res) {
-		console.log('token=', req.params.token);
-		var decoded_email = jwt.decode(req.params.token, configAuth.jwt_secret);
+	router.get('/mypage', function(req, res) {
+		console.log('token=', req.query.token);
+		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
 		User.findOne({email: decoded_email}, function(err, user) {
 			console.log('user=', user);
