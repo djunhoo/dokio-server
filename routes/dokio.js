@@ -147,7 +147,7 @@ router.get('/filter', function(req, res, next) {
             }
         },
 
-            '-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
+            '-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').populate('services', '-_id -__v').populate('petcategories', '-_id -__v')
         .exec(function(err, dokio){
                 if(err) console.log(err);
                 res.json({
@@ -161,7 +161,7 @@ router.get('/filter', function(req, res, next) {
             DokioModel.find({
             category: req.query.thema,
             services: { $in: arrayfilter }
-                             },'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+                             },'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').sort({'price.weight:' : 1, 'price.price': 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
                 if(err) next(err);
                 if(dokio) {
                     res.json({
@@ -224,7 +224,7 @@ router.get('/filter', function(req, res, next) {
             DokioModel.find({
             category: req.query.thema,
             services: { $in: arrayfilter }
-                             },'-__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
+                             },'-__v -price -events -rule -like_count -reviews -times -services -petcategories -category').sort({like_count: 1}).populate('services', '-_id -__v').populate('petcategories', '-_id -__v').exec(function(err, dokio) {
                     if(err) console.log(err);
                     if(dokio) {
                         res.json({
