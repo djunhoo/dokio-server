@@ -53,6 +53,39 @@ module.exports= function (passport) {
 		res.render('index', {title: '메인페이지'});
 	});
 
+	router.get('/name', function(req, res, next) {
+	  res.json([
+		  {
+		  	name: "이건호",
+		  	email: "hi@naver.com"
+		  },
+		  {
+		  	name: "이건호",
+		  	email: "hi@naver.com"
+		  },
+		  {
+		  	name: "이건호",
+		  	email: "hi@naver.com"
+		  },
+		  {
+		  	name: "이건호",
+		  	email: "hi@naver.com"
+		  },
+		  {
+		  	name: "이건호",
+		  	email: "hi@naver.com"
+		  },
+		  {
+		  	name: "이건호",
+		  	email: "hi@naver.com"
+		  },
+		  {
+		  	name: "이건호",
+		  	email: "hi@naver.com"
+		  }
+	  ]);
+	});
+
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
 		console.log('body=', req.body);
 		console.log('query_token=', req.body.token);
@@ -495,8 +528,6 @@ module.exports= function (passport) {
     	          });
     	    }
     	});
-
-
     });
 	// 프로필 라우터
 	// 프로필
@@ -504,7 +535,7 @@ module.exports= function (passport) {
 		console.log('token=', req.query.token);
 		var decoded_email = jwt.decode(req.query.token, configAuth.jwt_secret);
 		console.log('decoded_email=', decoded_email);
-		User.findOne({email: decoded_email},'-__v -_id -memos -pets -password -favorites', function(err, user) {
+		User.findOne({email: decoded_email},'-__v -userid -_id -memos -pets -password -favorites', function(err, user) {
 			console.log('user=', user);
 		        if (err)
 				    console.log('err=', err);
