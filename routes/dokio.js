@@ -208,6 +208,7 @@ router.get('/filter', function(req, res, next) {
                         address: dokio.address,
                         name: dokio.name,
                         img_url: dokio.img_url,
+                        wedo: dokio.wedo,
                         distance: distance
                     })
                     callback();
