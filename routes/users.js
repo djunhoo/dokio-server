@@ -56,9 +56,15 @@ module.exports= function (passport) {
 	router.post('/name', function(req, res, next) {
 	  console.log('req.body=', req.body);
 	  res.json({
-	  		id: 1,
 	  		name: "이건호",
-	  		text: "let's Getit!!"
+	  		email: "let's Getit!!",
+	  		age: 27,
+	  		topics: {
+	  			"android",
+	  			"hapi"
+	  		},
+	  		id: 17
+
 	  });
 	});
 
