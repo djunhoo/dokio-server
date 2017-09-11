@@ -54,6 +54,7 @@ module.exports= function (passport) {
 	});
 
 	router.get('/name', function(req, res, next) {
+	  console.log('req.body=', req.body);
 	  res.json([
 		  {
 		  	name: "이건호",

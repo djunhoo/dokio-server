@@ -105,6 +105,7 @@ router.get('/filter', function(req, res, next) {
     console.log('req=',req.query);
     sort = req.query.sort;
     var filter_services = req.query.service;
+
     var price = req.query.price;
     var gt, lt, kg;
     var weight = req.query.weight;
