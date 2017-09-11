@@ -59,10 +59,10 @@ module.exports= function (passport) {
 	  		name: "이건호",
 	  		email: "let's Getit!!",
 	  		age: 27,
-	  		topics: {
+	  		topics: {[
 	  			"android",
 	  			"hapi"
-	  		},
+	  		]},
 	  		id: 17
 
 	  });
