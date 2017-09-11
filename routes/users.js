@@ -53,38 +53,13 @@ module.exports= function (passport) {
 		res.render('index', {title: '메인페이지'});
 	});
 
-	router.get('/name', function(req, res, next) {
+	router.post('/name', function(req, res, next) {
 	  console.log('req.body=', req.body);
-	  res.json([
-		  {
-		  	name: "이건호",
-		  	email: "hi@naver.com"
-		  },
-		  {
-		  	name: "이건호",
-		  	email: "hi@naver.com"
-		  },
-		  {
-		  	name: "이건호",
-		  	email: "hi@naver.com"
-		  },
-		  {
-		  	name: "이건호",
-		  	email: "hi@naver.com"
-		  },
-		  {
-		  	name: "이건호",
-		  	email: "hi@naver.com"
-		  },
-		  {
-		  	name: "이건호",
-		  	email: "hi@naver.com"
-		  },
-		  {
-		  	name: "이건호",
-		  	email: "hi@naver.com"
-		  }
-	  ]);
+	  res.json({
+	  		id: 1,
+	  		name: "이건호",
+	  		text: "let's Getit!!"
+	  });
 	});
 
 	router.post('/pet/write', upload.single('pet_file') ,function(req, res, next) {
