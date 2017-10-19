@@ -72,7 +72,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/cast', function(req, res, next){
-    CastModel.find({}, '-__v -_id -url', function(err, casts){
+    CastModel.find({}, '-__v -_id', function(err, casts){
         if(casts){
             res.json({
                 success_code: 1,
@@ -90,7 +90,7 @@ router.get('/cast', function(req, res, next){
 });
 
 router.get('/marketing', function(req, res, next){
-    DokioModel.findRandom({},'-_id -phonenumber -__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category', {limit: 10}, function(err, results) {
+    DokioModel.findRandom({},'-phonenumber -__v -price -wedo -events -rule -like_count -reviews -times -services -petcategories -category', {limit: 10}, function(err, results) {
       if (err) {
         console.log(err); // 5 elements
       }
