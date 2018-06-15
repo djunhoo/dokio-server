@@ -7,8 +7,7 @@ var options = {
     encoding: 'binary'
 };
 
-var PetCategory = require('../models/petcategory').petcategoryModel
-;
+var PetCategory = require('../models/petcategory').petcategoryModel;
 
 
 request(options, function(err, response, body) {
@@ -16,15 +15,21 @@ request(options, function(err, response, body) {
     var strContents = iconv.decode(body, 'utf-8');
     var $ = cheerio.load(strContents);
     for(var i=0; i<187; i++) {
-    	var strArea = $('.box_tbl tbody tr').find('a')[i].children;
-        console.log(strArea[0].data);
+        try {
+            var strArea = $('.box_tbl tbody tr').find('a')[i].children;
+            console.log('data=', strArea[0].data);
         
-        var petca = new PetCategory();
-        petca.category_name = strArea[0].data;
-        petca.save(function(err, doc) {
-            if(err) console.log(err);
-            console.log('doc=', doc);
-        });
+            var petca = new PetCategory();
+            petca.category_name = strArea[0].data;
+            petca.save(function(err, doc) {
+                if(err) console.log(err);
+                console.log('doc=', doc);
+            });
+        } catch(exception) {
+            console.log('valuieerror');
+        }
+    	
+        
     }
 
 

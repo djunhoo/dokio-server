@@ -81,7 +81,7 @@
             </label><br>
             <div class="col-sm-10">
                 <select name='pet_category[]' multiple="multiple" id='selectpicker' class='form-control' data-style='btn-default' data-live-search='true'>
-                        <% for(var i=0; i<187; i++) { %>
+                        <% for(var i=0; i<categorys.length; i++) { %>
                             <option value='<%= categorys[i]._id %>'token='<%= categorys[i].category_name %>'><%= categorys[i].category_name %></option>
                         <% } %>
                 </select>
@@ -152,13 +152,7 @@
   }
   $(function () {
     $("#btn1").click(function(){
-        if($("#file_input").val()) {
-            frm1.submit();
-        } else {
-            alert("이미지를 꼭 입력해주세요.");
-            return;
-        }
-
+        frm1.submit();
     });
     var n = 1;
     var n_i = 1;
@@ -179,15 +173,6 @@
         });
         $('#selectpicker').selectpicker();
         $('#selectpicker_service').selectpicker();
-        $('#add_category').click(function(e) {
-            console.log('n_c=',n_c);
-            if( n_c < 10) {
-                n_c++;
-                $('#category').append("<div><div class='col-sm-10'><select name='category' id='selectpicker_" +n_c+ "' class='form-control' data-style='btn-default' data-live-search='true'><% for(var i=1; i<187; i++) { %><option token='<%= categorys[i].category_name %>'><%= categorys[i].category_name %><% } %></option></select></div><div class='col-sm-2'><input type='button' class='btn btn-primary' value='삭제' id='remove_category'></div><br><br><div>");
-
-            }
-            $('#selectpicker_' + n_c).selectpicker();
-        });
         $('form').on('click', '#remove_category', function(){
                 n_c--;
                 console.log('n_c=',n_c);

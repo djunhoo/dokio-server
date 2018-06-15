@@ -1,5 +1,5 @@
 // serviceseed.js
-var db = require('../models/db');
+require('dotenv').config()
 var dokioservice = require('../models/dokioservice').dokioserviceModel;
 var mongoose = require('mongoose');
 

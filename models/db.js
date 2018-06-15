@@ -1,18 +1,13 @@
  // models/db.js
 var mongoose = require('mongoose');
-var uri = 'mongodb://localhost/test';
-var options = {
-	server: { poolSize: 100 }
-};
-
-var db = mongoose.createConnection(uri, options);
-
+mongoose.Promise = global.Promise;
+require('dotenv').config();
+var database_uri = process.env.DATABASE_URI || '';
+mongoose.connect(database_uri, { useMongoClient: true } );
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-	console.log('mongodb connectio completed');
-});
-
-db.on('error', function(err) {
-	if(err) console.log('db error:', err);
+  // we're connected!
 });
 
 module.exports = db;

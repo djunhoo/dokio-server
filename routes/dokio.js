@@ -354,7 +354,6 @@ router.get('/name', function(req, res, next) {
 });
 
 router.get('/add_dokio', function(req, res, next) {
-    var service_category = null;
     PetCategory.find({}, function (err, doc) {
         if(err) next(err);
         DokioService.find({}, function(err, services) {
@@ -385,7 +384,7 @@ router.get('/:dokio_id', function(req, res, next) {
                 success_code: 0,
                 message: "찾는 정보가 없습니다.",
                 result: null
-            })
+            });
         }
     });
 });
@@ -401,16 +400,11 @@ router.post('/add_dokio',upload.array('dokiofile'), function(req, res, next) {
     var last = changetheV(req.body.last);
     var price_info = changetheV(req.body.price_info);
     var price_data = [];
-    console.log('first.legnth=', first.length);
-    for(var i=0; i<first.length; i++) {
-        for(var j=first[i]; j<=last[i]; j++){
-            console.log('j=', j);
-            price_data.push({
-                weight: j,
-                price: price_info[i]
-            });
-        }
-        console.log('price_data=', price_data);
+    for(var j=first; j<=last; j++){
+        price_data.push({
+            weight: j,
+            price: price_info
+        });
     }
     newDokio.price = price_data;
     var img_src = [];
