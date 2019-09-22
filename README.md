@@ -4,7 +4,7 @@ SK 고용디딤돌 5기 텀프로젝트로 제작된 애견 정보 플랫폼 API
 
 #### 개발 구성
 - Back-end : Express.js
-- Front-end : ejs template
+- App : Android
 - Database : MongoDB
 
 #### 화면 구성
